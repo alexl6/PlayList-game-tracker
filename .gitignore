@@ -1,0 +1,9 @@
+# API Key
+keys.py
+
+# macOS
+.DS_Store
+
+# Pycharm
+.idea
+__pycache__
