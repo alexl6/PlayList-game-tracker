@@ -4,6 +4,9 @@ keys.py
 # macOS
 .DS_Store
 
+# Cache
+cache
+
 # Pycharm
 .idea
 __pycache__
