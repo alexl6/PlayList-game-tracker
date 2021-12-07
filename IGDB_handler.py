@@ -1,7 +1,11 @@
 import time
 import urllib.request, urllib.parse, urllib.error
 import json
-import requests
+# from IGDB_wrapper import IGDBWrapper
+from requests import post
+from requests.models import Request, Response
+
+API_URL = "https://api.igdb.com/v4/"
 
 def safe_get(req: str) -> str:
     '''
@@ -23,6 +27,10 @@ def safe_get(req: str) -> str:
 class IGDB_handler:
     """
     Handles operations using IGDB.com API
+    """
+
+    """
+    Initialization & Authentication
     """
     def __init__(self, client_id: str, secret: str):
         """
@@ -48,8 +56,6 @@ class IGDB_handler:
         req = urllib.request.Request(url="https://id.twitch.tv/oauth2/token", data=data, method="POST")
         # Make request
         auth = safe_get(req)
-        if auth is None:
-            raise Exception("Cannot authenticate to IGDB")
 
         # TODO: Remove debug code
         print(auth)
@@ -73,12 +79,12 @@ class IGDB_handler:
         data = urllib.parse.urlencode(data).encode()
         # Request authentication token from IGDB server
         req = urllib.request.Request(url="https://id.twitch.tv/oauth2/token", data=data, method="POST")
+
         # Make request
         auth = safe_get(req)
-        if auth is None:
-            raise Exception("Cannot authenticate to IGDB")
         # Load request & cache the access token
         auth = json.loads(auth)
+
         # Make sure we received a token
         if "expires_in" not in auth or "access_token" not in auth:
             raise Exception("Cannot authenticate to IGDB")
@@ -93,7 +99,53 @@ class IGDB_handler:
         """
         return time.time() > self.exp_time
 
+    """
+    Initialization & Authentication
+    """
+    def api_request(self, endpoint: str, query: str) -> Response:
+        """
+        Takes an endpoint and the Apicalypse query and returns the api response as a byte string.
+        """
+        url = IGDB_handler._build_url(endpoint)
+        params = self._compose_request(query)
+
+        response = post(url, **params)
+        response.raise_for_status()
+
+        return response.content
+
+    @staticmethod
+    def _build_url(endpoint: str = '') -> str:
+        return ('%s%s' % (API_URL, endpoint))
+
+    def _compose_request(self, query: str) -> Request:
+        if not query:
+            raise Exception(
+                'No query provided!\nEither provide an inline query following Apicalypse\'s syntax or an Apicalypse object')
+        # Update the token of this instance
+        if self.token_expired():
+            self.update_token()
+
+        request_params = {
+            'headers': {
+                'Client-ID': self.client_id,
+                'Authorization': ('Bearer %s' % (self.token)),
+            }
+        }
+
+        if isinstance(query, str):
+            request_params['data'] = query
+            return request_params
+
+        raise TypeError(
+            'Incorrect type of argument \'query\', only Apicalypse-like strings or Apicalypse objects are allowed')
+
 
 if __name__ == "__main__":
     from keys import IGDB_ID, IGDB_secret
     test = IGDB_handler(IGDB_ID, IGDB_secret)
+    byte_array = test.api_request(
+        'games',
+        'fields id, name; offset 0; where platforms=48;'
+    )
+    print(json.loads(byte_array))
