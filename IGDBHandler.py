@@ -7,12 +7,14 @@ from requests.models import Request, Response
 
 API_URL = "https://api.igdb.com/v4/"
 
+
 def safe_get(req: str) -> str:
-    '''
+    """
     Safely make an request and returns the result in a json file
+
     :param req: A parsed request encoded by urllib.parse.urlencode
     :return: Requested object in json. Returns None if an error has occured
-    '''
+    """
     try:
         return urllib.request.urlopen(req).read()
     except urllib.error.URLError as e:
@@ -24,7 +26,8 @@ def safe_get(req: str) -> str:
             print("Reason: ", e.reason)
         return None
 
-class IGDB_handler:
+
+class IGDBHandler:
     """
     Handles operations using IGDB.com API
     """
@@ -32,9 +35,11 @@ class IGDB_handler:
     """
     Initialization & Authentication
     """
+
     def __init__(self, client_id: str, secret: str):
         """
         Initializes an instance of IGDB_handler that handles requests/data processing to IGDB
+
         :param client_id: Client ID string
         :param secret: Client secret string
         """
@@ -42,7 +47,7 @@ class IGDB_handler:
         self.client_id = client_id
         self.secret = secret
 
-        #TODO: Remove debug code - Temporary cache for token
+        # TODO: Remove debug code - Temporary cache for token
         from keys import IGDB_token
         self.token = IGDB_token
         self.exp_time = time.time() + 2134700
@@ -68,7 +73,6 @@ class IGDB_handler:
         # Save the returned token and its expiration time
         self.exp_time = time.time() + auth['expires_in'] - 10
         self.token = auth['access_token']
-
 
     def update_token(self) -> None:
         """
@@ -102,11 +106,12 @@ class IGDB_handler:
     """
     Initialization & Authentication
     """
+
     def api_request(self, endpoint: str, query: str) -> Response:
         """
         Takes an endpoint and the Apicalypse query and returns the api response as a byte string.
         """
-        url = IGDB_handler._build_url(endpoint)
+        url = IGDBHandler._build_url(endpoint)
         params = self._compose_request(query)
 
         response = post(url, **params)
@@ -140,12 +145,128 @@ class IGDB_handler:
         raise TypeError(
             'Incorrect type of argument \'query\', only Apicalypse-like strings or Apicalypse objects are allowed')
 
+    def search_game(self, name: str) -> list[dict]:
+        """
+        Searches a game in IGDB
 
+        :param name: Name of the game
+        :return: A list of dictionaries containing the name of games that matches the search query & their id
+        """
+        req = self.api_request(
+            'games',
+            "search \"%s\"; fields *;" % name
+        )
+        return json.loads(req)
+
+    # def search_involved_company(self, involved_companies: str, params: str = "") -> list[dict]:
+    #     """
+    #     Searches for a list of companies involved in a game
+    #
+    #     :param involved_companies: IDs for a list of involved_companies, comma separated
+    #     :param params: Additional parameters specified by the caller
+    #     :return: A list of dictionaries representing companies that matches the specific requirements
+    #     """
+    #     req = self.api_request(
+    #         'involved_companies',
+    #         "fields company; where id = (%s)%s;" % (involved_companies, params)
+    #     )
+    #     return json.loads(req)
+    #
+    # def search_company(self, ids: str) -> list[dict]:
+    #     """
+    #     Searches a list company
+    #
+    #     :param ids: IDs for a list of companies, comma separated
+    #     :return: List of dictionaries representing companies matching the given IDs
+    #     """
+    #     req = self.api_request(
+    #         'companies',
+    #         "fields name; where id = (%s);" % ids
+    #     )
+    #     return json.loads(req)
+    #
+    # def get_company(self, involved_companies: list[int], type: str = "developer", limit: int = 2) -> list[str]:
+    #     """
+    #     Returns a list of companies that worked on the game
+    #     :param involved_companies: List of integer IDs representing companies that worked on the game.
+    #            "involved_companies" entry in a game dictionary.
+    #     :param type: Type of company, defaults to developer (Possible values: "developer","publisher", "porting")
+    #     :param limit: Maximum number of companies names to return, defaults to 2.
+    #     :return: List of company names
+    #     """
+    #     # Convert the involved companies id into comma separated values
+    #     ids = ",".join(str(i) for i in involved_companies)
+    #     # Get copmany ID for those companies that are developers
+    #     print(ids)
+    #     response = self.search_involved_company(ids, " & %s = true" % type)
+    #     # Convert company IDs to CSV
+    #     company_ids = ",".join(str(i['company']) for i in response)
+    #     # Query for their names
+    #     response = self.search_company(company_ids)
+    #
+    #     developer_names = [i['name'] for i in response]
+    #     if len(developer_names) > limit:
+    #         return developer_names[:limit]
+    #     return developer_names
+
+    def searchgame(self, name: str):
+        req = self.api_request(
+        """
+        fields name, collection, involved_companies.company.*, genres.name, platforms.*;
+        search "%s";
+        where category = (0,6,8,9,10,11);
+        """%name
+        )
+        return json.loads(req)
+
+# Test code
 if __name__ == "__main__":
     from keys import IGDB_ID, IGDB_secret
-    test = IGDB_handler(IGDB_ID, IGDB_secret)
+
+    test = IGDBHandler(IGDB_ID, IGDB_secret)
+    # byte_array = test.api_request(
+    #     'games',
+    #     'fields id, name; offset 0; where platforms=48;'
+    # )
+    # print(json.loads(byte_array))
     byte_array = test.api_request(
         'games',
-        'fields id, name; offset 0; where platforms=48;'
+        """
+        fields name, collection, involved_companies.company.*, genres.name; platforms.*;
+        search "Forza horizon 4";
+        where category = (0,6,8,9,10,11);
+        """
     )
-    print(json.loads(byte_array))
+    print(json.loads(byte_array)[0])
+    exit()
+
+    game_info = test.search_game("Minecraft")[0]
+
+    print(game_info)
+
+    developers = test.get_company(game_info['involved_companies'])
+    print(developers)
+    # involved_companies = (",".join(str(i) for i in game_info["involved_companies"]))
+    # print(involved_companies)
+    #
+    # req = test.api_request(
+    #     'involved_companies',
+    #     "fields company; where id = (%s) & developer = true; |" % involved_companies
+    # )
+    # req = json.loads(req)
+    # print(req)
+    #
+    # companies_id = ",".join(str(i['company']) for i in req)
+    #
+    # companies = test.api_request(
+    #     'companies',
+    #     "fields name; where id = (%s);" % companies_id
+    # )
+    #
+    # print(companies)
+    # involved_company_data = test.search_involved_company(company)[0]
+    # print(involved_company_data)
+
+    #
+    # company = test.search_company(involved_company_data['company'])
+    # print(company)
