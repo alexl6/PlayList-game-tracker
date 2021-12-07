@@ -43,7 +43,7 @@ def search(game: str) -> list[dict]:
     return json.loads(_safe_get(baseurl + "?" + urllib.parse.urlencode(param, quote_via=urllib.parse.quote)))
 
 
-def _top_id(games: dict) -> int:
+def top_id(games: list[dict]) -> int:
     """
     Returns the OpenCritic game ID for the top result in a given list of games
 
@@ -78,6 +78,6 @@ def top_critic_score(game_data: dict) -> int:
 
 if __name__ == '__main__':
     val = search("Forza Horizon 5")
-    game_id = _top_id(val)
+    game_id = top_id(val)
     review = get_review(game_id)
     print(top_critic_score(review))
