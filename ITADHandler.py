@@ -58,7 +58,7 @@ class ITADHandler:
                   'offset': 0,
                   'limit': lim}
 
-        return self.safe_get(baseurl + "?" + urllib.parse.urlencode(params))
+        return _safe_get(baseurl + "?" + urllib.parse.urlencode(params))
 
     @staticmethod
     def parse_popular(result: {}) -> list[str]:
@@ -84,7 +84,7 @@ class ITADHandler:
         params = {'key': self.key,
                   'plains': ','.join(games),    # This creates a comma delimited string with the values in the list
                   'optional': 'metacritic'}
-        return self.safe_get(baseurl + "?" + urllib.parse.urlencode(params))
+        return _safe_get(baseurl + "?" + urllib.parse.urlencode(params))
 
 
     def get_historic_low(self, games: list[str]) -> json:
@@ -98,7 +98,7 @@ class ITADHandler:
         params = {'key': self.key,
                   'plains': ','.join(games),    # This creates a comma delimited string with the values in the list
                   'shops': 'steam'}
-        return self.safe_get(baseurl + "?" + urllib.parse.urlencode(params))
+        return _safe_get(baseurl + "?" + urllib.parse.urlencode(params))
 
 
     def load_historical_low(self, games: list[str]) -> dict:
@@ -148,42 +148,42 @@ if __name__ == "__main__":
 
     print(plain)
 
-    # # Caches the result to avoid exceeding request rate limit
-    # # Get the list of top 50 games on IsThereAnyDeal
-    # most_popular = json.loads(handler.request_popular(50))
-    # most_popular_plains = handler.parse_popular(most_popular)
-    #
-    # # Get basic info about those games
-    # popular_games_info = json.loads(handler.get_games_info(most_popular_plains))['data']
-    # # Output a csv file containing review score information about those games
-    # with open('Part 2 - review score.csv', 'w', encoding='utf-8') as out:
-    #     # Write column titles
-    #     out.write("Rank,Name,Steam pct positive, Metacritic (critic), Metacritic (user)\n")
-    #     # Print game rank & basic info
-    #     for i in range(len(most_popular_plains)):
-    #         plain = most_popular_plains[i]
-    #         info = popular_games_info[plain]
-    #         out.write("%d,%s,%d,"%(i+1, info['title'], info['reviews']['steam']['perc_positive']))
-    #
-    #         # Handles the case where Metacritic score is unavailable
-    #         if not info['metacritic'] is None:
-    #             if not info['metacritic']['critic_score'] is None:
-    #                 out.write("%d," %info['metacritic']['critic_score'])
-    #             if not info['metacritic']['user_score'] is None:
-    #                 out.write(str(info['metacritic']['user_score']))
-    #             out.write("\n")
-    #         else:
-    #             out.write(",\n")
-    #
-    # # Get the lowest price of these games on Steam game store
-    # popular_games_lowest = handler.load_historical_low(most_popular_plains)
-    # # Output a csv file containing review score information about those games
-    # with open('Part 2 - lowest price.csv', 'w', encoding='utf-8') as out:
-    #     # Write column titles
-    #     out.write("Rank,Name,Lowest price on Steam\n")
-    #     # Print game rank & basic info
-    #     for i in range(len(most_popular_plains)):
-    #         plain = most_popular_plains[i]
-    #         price = popular_games_lowest[plain]
-    #         out.write("%d,%s,%f\n"%(i+1, popular_games_info[plain]['title'], price[0]['price']))
+    # Caches the result to avoid exceeding request rate limit
+    # Get the list of top 50 games on IsThereAnyDeal
+    most_popular = json.loads(handler.request_popular(50))
+    most_popular_plains = handler.parse_popular(most_popular)
+
+    # Get basic info about those games
+    popular_games_info = json.loads(handler.get_games_info(most_popular_plains))['data']
+    # Output a csv file containing review score information about those games
+    with open('Part 2 - review score.csv', 'w', encoding='utf-8') as out:
+        # Write column titles
+        out.write("Rank,Name,Steam pct positive, Metacritic (critic), Metacritic (user)\n")
+        # Print game rank & basic info
+        for i in range(len(most_popular_plains)):
+            plain = most_popular_plains[i]
+            info = popular_games_info[plain]
+            out.write("%d,%s,%d,"%(i+1, info['title'], info['reviews']['steam']['perc_positive']))
+
+            # Handles the case where Metacritic score is unavailable
+            if not info['metacritic'] is None:
+                if not info['metacritic']['critic_score'] is None:
+                    out.write("%d," %info['metacritic']['critic_score'])
+                if not info['metacritic']['user_score'] is None:
+                    out.write(str(info['metacritic']['user_score']))
+                out.write("\n")
+            else:
+                out.write(",\n")
+
+    # Get the lowest price of these games on Steam game store
+    popular_games_lowest = handler.load_historical_low(most_popular_plains)
+    # Output a csv file containing review score information about those games
+    with open('Part 2 - lowest price.csv', 'w', encoding='utf-8') as out:
+        # Write column titles
+        out.write("Rank,Name,Lowest price on Steam\n")
+        # Print game rank & basic info
+        for i in range(len(most_popular_plains)):
+            plain = most_popular_plains[i]
+            price = popular_games_lowest[plain]
+            out.write("%d,%s,%f\n"%(i+1, popular_games_info[plain]['title'], price[0]['price']))
 
