@@ -154,12 +154,14 @@ class IGDBHandler:
         req = self.api_request(
             'games',
             """
-            fields name, collection, involved_companies.company.*, genres.name, platforms.*;
+            fields name, collection, involved_companies.company.name, involved_companies.developer,
+             involved_companies.publisher, genres.name, platforms.*;
             search "%s";
             where category = (0,6,8,9,10,11);
             """%name
         )
         return json.loads(req)
+
 
 # Test code
 if __name__ == "__main__":
@@ -174,7 +176,7 @@ if __name__ == "__main__":
     # byte_array = test.api_request(
     #     'games',
     #     """
-    #     fields name, collection, involved_companies.company.*, genres.name; platforms.*;
+    #     fields name, collection, involved_companies.*.*, genres.name; platforms.*;
     #     search "Forza horizon 4";
     #     where category = (0,6,8,9,10,11);
     #     """

@@ -1,4 +1,3 @@
-
 class game:
     def __init__(self, name:str,
                  genre:list[str],
