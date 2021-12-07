@@ -8,11 +8,14 @@ Final project for HCDE 310 - Autumn 2021 @UW
 
 - [IsThereAnyDeal.com API](https://itad.docs.apiary.io/#)
 - [IGDB API](https://www.igdb.com/api)
-- [OpenCritic API](https://app.swaggerhub.com/apis-docs/OpenCritic/OpenCritic-API/0.1.0#/Search/searchGames) (planned)
+- [OpenCritic API](https://app.swaggerhub.com/apis-docs/OpenCritic/OpenCritic-API/0.1.0#/Search/searchGames)
+- [HowLongToBeat](https://howlongtobeat.com/)
 
 ## Third-party code usage
 
-The project also contains code from [IGDB API Python Wrapper](https://github.com/twitchtv/igdb-api-python).
+The project contains code from:
+- [IGDB API Python Wrapper](https://github.com/twitchtv/igdb-api-python).
+- [Unofficial HowLongToBeat Python API](https://github.com/JaeguKim/HowLongToBeat-Python-API)
 
 ## Disclaimer:
 
