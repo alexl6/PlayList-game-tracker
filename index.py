@@ -6,7 +6,7 @@ from hltbapi import HtmlScraper
 from gameobj import GameObj
 
 # Import helper class
-from typing import List
+from typing import List, Dict
 
 from IGDBHandler import IGDBHandler
 from ITADHandler import ITADHandler
@@ -22,6 +22,7 @@ app = Flask(__name__)
 
 # Global variables
 games: List[GameObj] = []
+genres_dict: Dict[str, int] = {}
 
 
 # Helper functions
@@ -35,61 +36,79 @@ def add_game(keyword: str) -> None:
     # Extract useful data form the response
     full_name = IGDB_res['name']
     # Get game genres
+    genres = []
     if 'genres' in IGDB_res: # maybe add the following code     and len(IGDB_res['genres']) > 0:
         genres = [x['name'] for x in IGDB_res['genres']]
-    else:
-        genres = []
+
+    # Add genre to the overall genre dictionary
+    for g in genres:
+        genres_dict[g] = genres_dict.get(g, 0) + 1
+
     # Get game developer
+    devs: List[str] = []
+    publishers: List[str] = []
     if 'involved_companies' in IGDB_res:
         temp = [x['company']['name'] for x in IGDB_res['involved_companies'] if x['developer'] == True]
         if len(temp) > 0:
             devs = temp[:min(2,len(temp))]
-        else:
-            devs = []
 
         temp = [x['company']['name'] for x in IGDB_res['involved_companies'] if x['publisher'] == True]
         if len(temp) > 0:
             publishers = temp[:min(2, len(temp))]
-        else:
-            publishers = []
-    else:
-        devs = []
-        publishers = []
+
+    # Get available platforms
+    platforms: List[Dict[str, str]] = []
+    if 'platforms' in IGDB_res and len(IGDB_res['platforms']) > 0:
+        # TODO: Fix this
+        platforms = [{'name': x['name'], 'logo': x['platform_logo']['url']} for x in IGDB_res['platforms']]
+
+    # Game series
+    series: Dict = {'name': 'N/A', 'games': []}
+    if 'collection' in IGDB_res and len(IGDB_res['collection']['games']) > 0:
+        series['name'] = IGDB_res['collection']['name']
+        series['games'] = [x['name'] for x in IGDB_res['collection']['games'] if x['category'] in {0, 6, 8, 9, 10, 11}]
+
+    # Realted games
+    related: List[str] = []
+    if 'similar_games' in IGDB_res and len(IGDB_res['similar_games']) > 0:
+        related = [x['name'] for x in IGDB_res['similar_games']]
+
 
     # Lookup in ITAD
     # TODO: Implement full ITAD feature set
     plain = ITAD.search(full_name)
+    prices = {'price': -1, 'lowest': -1, 'stores': List[str]}
     if plain is not None:
         lowest = ITAD.load_historical_low([plain])
-        lowest_price = lowest[plain][0]['price']
+        prices['lowest'] = lowest[plain][0]['price']
     else:
-        lowest_price = -1
+        prices['stores'] = []
 
     # Load OC score
     search_res = OCHandler.search(full_name)
     if OCHandler.check_validity(search_res):
         ID = OCHandler.top_id(search_res)
-        OC_Score = int(OCHandler.top_critic_score(OCHandler.get_review(ID)))
+        OC_score = int(OCHandler.top_critic_score(OCHandler.get_review(ID)))
     else:
-        OC_Score = -1
+        OC_score = -1
 
     # Time to beat the game
     try:
         TTB = HtmlScraper().search(name=full_name)
         TTB = TTB[0].gameplayMain
     except Exception:
+        # Using a generic Exception here because the unofficial HowLongToBeat API doesn't seem to handle errors
+        print("Unable to find this game on HowLongToBeat.com")
         TTB = -1
-        print("Can't find it")
 
     # TODO: Fix price
-    new_game = GameObj(full_name, genres, devs, publishers, lowest_price, [], TTB, "url", "art", OC_Score)
+    new_game = GameObj(full_name, genres, devs, publishers, series, related, prices, platforms,
+                       TTB, "url", "art", OC_score)
 
     # Add the newly created game object to the list
     games.append(new_game)
 
-add_game(input("Enter a game:\n"))
 
-exit()
 
 # Flask handlers
 @app.route("/")

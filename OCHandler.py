@@ -69,6 +69,12 @@ def get_review(id: int) -> dict:
     # Switch alternate quote_via function to work with the API
     return json.loads(_safe_get(url))
 
+def suggestions(game: str) -> List[str]:
+    res = search(game)
+    if len(res) == 0:
+        return []
+    return [x['name'] for x in res]
+
 
 def top_critic_score(game_data: dict) -> int:
     """
@@ -83,7 +89,7 @@ def top_critic_score(game_data: dict) -> int:
 
 if __name__ == '__main__':
     val = search(input("Enter a game:\n"))
-
+    print(val)
     game_id = top_id(val)
     review = get_review(game_id)
     print(top_critic_score(review))

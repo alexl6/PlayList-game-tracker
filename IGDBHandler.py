@@ -155,14 +155,29 @@ class IGDBHandler:
         req = self.api_request(
             'games',
             """
-            fields name, collection, involved_companies.company.name, involved_companies.developer,
-             involved_companies.publisher, genres.name, platforms.*;
+            fields name, involved_companies.company.name, involved_companies.developer,
+             involved_companies.publisher, genres.name, platforms.name, platforms.platform_logo.url, 
+             collection.name, collection.games.name, collection.games.category, collection.url,
+             similar_games.name, similar_games.genres.name;
             search "%s";
             where category = (0,6,8,9,10,11);
             """%name
         )
         return json.loads(req)
 
+    def suggestions(self, name: str) -> List[dict]:
+        req = self.api_request(
+            'games',
+            """
+            fields name;
+            search "%s";
+            where category = (0,6,8,9,10,11);
+            """%name
+        )
+        res = json.loads(req)
+        if len(res) == 0:
+            return []
+        return [x['name'] for x in res]
 
 # Test code
 if __name__ == "__main__":
@@ -177,16 +192,17 @@ if __name__ == "__main__":
     # byte_array = test.api_request(
     #     'games',
     #     """
-    #     fields name, collection, involved_companies.*.*, genres.name; platforms.*;
+    #     fields name, involved_companies.company.name, involved_companies.developer,
+    #          involved_companies.publisher, genres.name, platforms.name, platforms.platform_logo.url,
+    #          collection.name, collection.games.name, collection.games.category, collection.url,
+    #          similar_games.name, similar_games.genres.name;
     #     search "Forza horizon 4";
     #     where category = (0,6,8,9,10,11);
     #     """
     # )
     # print(json.loads(byte_array)[0])
+
+
     keyword = input("Enter a game:\n")
-    print(test.search_game(keyword))
+    print(test.suggestions(keyword))
     exit()
-
-    game_info = test.search_game("Minecraft")[0]
-
-    print(game_info)
