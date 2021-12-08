@@ -73,7 +73,7 @@ def suggestions(game: str) -> List[str]:
     res = search(game)
     if len(res) == 0:
         return []
-    return [x['name'] for x in res]
+    return [x['name'] for x in res if x['dist'] <= 0.75]
 
 
 def top_critic_score(game_data: dict) -> int:

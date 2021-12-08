@@ -165,7 +165,7 @@ class IGDBHandler:
         )
         return json.loads(req)
 
-    def suggestions(self, name: str) -> List[dict]:
+    def suggestions(self, name: str) -> List[str]:
         req = self.api_request(
             'games',
             """
