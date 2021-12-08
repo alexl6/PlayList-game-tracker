@@ -4,10 +4,10 @@ import json
 from flask import Flask, request, abort
 from hltbapi import HtmlScraper
 from gameobj import GameObj
+from typing import List, Dict
+from fuzzywuzzy import fuzz
 
 # Import helper class
-from typing import List, Dict
-
 from IGDBHandler import IGDBHandler
 from ITADHandler import ITADHandler
 import OCHandler
@@ -109,6 +109,22 @@ def add_game(keyword: str) -> None:
     games.append(new_game)
 
 
+# This function draws inspiration from contents on the following website:
+# https://www.geeksforgeeks.org/fuzzywuzzy-python-library/
+def autocomplete(keyword: str) -> List[str]:
+    # Get suggestions from IGDB and OpenCritic search
+    l1: List[str] = OCHandler.suggestions(keyword)
+    l2: List[str] = IGDB.suggestions(keyword)
+    l1 += l2
+    output: Dict[str, int] = {}
+    # Calculate the distance from suggestion to keyword
+    for e in l1:
+        if e not in output.keys():
+            # token_set_ratio seems to work best in my experiment
+            output[e] = fuzz.token_set_ratio(e, keyword)
+
+    return sorted(output.keys(), key=lambda x: output[x], reverse=True)
+
 
 # Flask handlers
 @app.route("/")
@@ -118,6 +134,24 @@ def main_handler():
         abort(400)
     dummy = {"key": "value"}
     return json.dumps(dummy)
+
+
+@app.route("/addgame")
+def addgame_handler():
+    name = request.args.get('name')
+    if name is None:
+        abort(400)
+    add_game(name)
+    return json.dumps("Done")
+
+
+@app.route("/autocomplete")
+def autocomplete_handler():
+    key = request.args.get('key')
+    if key is None:
+        abort(400)
+    return json.dumps(autocomplete(key))
+
 
 # res = HtmlScraper().search(name=input("Enter a game:\n"))
 # for entry in res:
@@ -140,9 +174,6 @@ def main_handler():
 
 # Main method
 if __name__ == "__main__":
-    # Initialize external helper objects to handle requests/API calls
-    IGDB: IGDBHandler = IGDBHandler(IGDB_ID, IGDB_secret)
-    ITAD: ITADHandler = ITADHandler(ITAD_key)
 
     keyword = input("Enter the name of a game:\n")
     # Lookup in IGDB
