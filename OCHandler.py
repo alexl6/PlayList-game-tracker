@@ -7,6 +7,7 @@ import time
 import urllib.request, urllib.parse, urllib.error
 import json
 
+from typing import List
 
 
 def _safe_get(req: str) -> str:
@@ -30,7 +31,7 @@ def _safe_get(req: str) -> str:
         return None
 
 
-def search(game: str) -> list[dict]:
+def search(game: str) -> List[dict]:
     """
     Search for matching entries in OpenCritic for a given game
 
@@ -43,7 +44,7 @@ def search(game: str) -> list[dict]:
     return json.loads(_safe_get(baseurl + "?" + urllib.parse.urlencode(param, quote_via=urllib.parse.quote)))
 
 
-def top_id(games: list[dict]) -> int:
+def top_id(games: List[dict]) -> int:
     """
     Returns the OpenCritic game ID for the top result in a given list of games
 
@@ -51,6 +52,10 @@ def top_id(games: list[dict]) -> int:
     :return: Integer game ID of the first game in the list
     """
     return games[0]['id']
+
+
+def check_validity(games: List[dict]) -> bool:
+    return games[0]['dist'] < 0.7
 
 
 def get_review(id: int) -> dict:
@@ -77,7 +82,8 @@ def top_critic_score(game_data: dict) -> int:
 
 
 if __name__ == '__main__':
-    val = search("Forza Horizon 5")
+    val = search(input("Enter a game:\n"))
+
     game_id = top_id(val)
     review = get_review(game_id)
     print(top_critic_score(review))

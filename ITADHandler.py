@@ -2,6 +2,8 @@ import time
 import urllib.request, urllib.parse, urllib.error
 import json
 
+from typing import List
+
 '''
 Helper class:
     Handles tasks related to IsThereAnyDeal.com API
@@ -61,7 +63,7 @@ class ITADHandler:
         return _safe_get(baseurl + "?" + urllib.parse.urlencode(params))
 
     @staticmethod
-    def parse_popular(result: {}) -> list[str]:
+    def parse_popular(result: {}) -> List[str]:
         """
         Parses the JSON file containing the most popular game on ITAD, sorted by their rank
 
@@ -73,7 +75,7 @@ class ITADHandler:
             games.append(entry['plain'])
         return games
 
-    def get_games_info(self, games: list[str]) -> str:
+    def get_games_info(self, games: List[str]) -> str:
         """
         Requests basic information about the list of games
 
@@ -87,7 +89,7 @@ class ITADHandler:
         return _safe_get(baseurl + "?" + urllib.parse.urlencode(params))
 
 
-    def get_historic_low(self, games: list[str]) -> json:
+    def get_historic_low(self, games: List[str]) -> json:
         """
         Requests the historical lowest price of the games on the Steam game store
 
@@ -101,7 +103,7 @@ class ITADHandler:
         return _safe_get(baseurl + "?" + urllib.parse.urlencode(params))
 
 
-    def load_historical_low(self, games: list[str]) -> dict:
+    def load_historical_low(self, games: List[str]) -> dict:
         """
         Load the historical lowest price for the given list of games on the Steam game store.
 
@@ -134,20 +136,25 @@ class ITADHandler:
         params = {'key': self.key, 'title': game}
         print(baseurl + "?" + urllib.parse.urlencode(params))
         response = _safe_get(baseurl + "?" + urllib.parse.urlencode(params))
+        # Returns None if error/no match
         if response is None:
             return None
-        return json.loads(response)['data']['plain']
+        response = json.loads(response)
+        if not response['.meta']['match']:
+            return None
+        return response['data']['plain']
 
 # Demo code for the class ported from HW5
 if __name__ == "__main__":
     from keys import ITAD_key
     handler = ITADHandler(ITAD_key)
 
+    keyword = input("Enter a game:\n")
     # Search demo
-    plain = handler.search("The Witcher 3")
+    plain = handler.search(keyword)
 
     print(plain)
-
+    exit()
     # Caches the result to avoid exceeding request rate limit
     # Get the list of top 50 games on IsThereAnyDeal
     most_popular = json.loads(handler.request_popular(50))

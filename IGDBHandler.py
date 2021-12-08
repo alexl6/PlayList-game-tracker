@@ -9,11 +9,12 @@ import urllib.request, urllib.parse, urllib.error
 import json
 from requests import post
 from requests.models import Request, Response
+from typing import List
 
 API_URL = "https://api.igdb.com/v4/"
 
 
-def safe_get(req: str) -> str:
+def safe_get(req) -> str:
     """
     Safely make an request and returns the result in a json file
 
@@ -150,7 +151,7 @@ class IGDBHandler:
         raise TypeError(
             'Incorrect type of argument \'query\', only Apicalypse-like strings or Apicalypse objects are allowed')
 
-    def search_game(self, name: str) -> list[dict]:
+    def search_game(self, name: str) -> List[dict]:
         req = self.api_request(
             'games',
             """
@@ -182,7 +183,8 @@ if __name__ == "__main__":
     #     """
     # )
     # print(json.loads(byte_array)[0])
-    print(test.search_game("Microsoft Flight Simulator 2020"))
+    keyword = input("Enter a game:\n")
+    print(test.search_game(keyword))
     exit()
 
     game_info = test.search_game("Minecraft")[0]
