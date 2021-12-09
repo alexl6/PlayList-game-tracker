@@ -1,7 +1,9 @@
 # Import packages
+import time
 import urllib.request, urllib.parse, urllib.error
 import json
 from flask import Flask, request, abort
+from flask_cors import CORS
 from hltbapi import HtmlScraper
 from gameobj import GameObj
 from typing import List, Dict
@@ -19,11 +21,13 @@ ITAD: ITADHandler = ITADHandler(ITAD_key)
 
 # Create new flask app
 app = Flask(__name__)
+CORS(app)
 
 # Global variables
 games: List[GameObj] = []
 genres_dict: Dict[str, int] = {}
-
+suggestions_cache: List[str] = []
+lastReq: float = time.time()
 
 # Helper functions
 def add_game(keyword: str) -> None:
@@ -130,6 +134,8 @@ def autocomplete(keyword: str) -> List[str]:
 def to_dict(obj):
     return obj.__dict__
 
+#TODO: Remove debug function
+# add_game("Overcooked 2")
 
 # Flask handlers
 @app.route("/")
@@ -155,7 +161,10 @@ def autocomplete_handler():
     key = request.args.get('key')
     if key is None:
         abort(400)
-    return json.dumps(autocomplete(key))
+    if time.time() - lastReq > 0.8:
+        suggestions_cache: List[str] = autocomplete(key)
+
+    return json.dumps(suggestions_cache)
 
 
 @app.route("/getgames")
