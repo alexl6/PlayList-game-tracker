@@ -113,15 +113,17 @@ class ITADHandler:
         """
         temp = {}
         print("Loading price data. This might take a while to avoid exceeding rate limit")
+        if len(games) <= 5:
+            return json.loads(self.get_historic_low(games))['data']
         # Load price data for 5 games at a time
         for i in range(0, len(games), 5):
             # Slows down the program to reduce the request rate
-            time.sleep(0.125)
             results = json.loads(self.get_historic_low(games[i:i + 5]))['data']
+            time.sleep(0.2)
             temp.update(results)
         # Handle the remaining game in the remainder
         if i < len(games):
-            time.sleep(0.125)
+            time.sleep(0.2)
             results = json.loads(self.get_historic_low(games[i:len(games)]))['data']
             temp.update(results)
         return temp
@@ -134,7 +136,6 @@ class ITADHandler:
         """
         baseurl = "https://api.isthereanydeal.com/v02/game/plain/"
         params = {'key': self.key, 'title': game}
-        print(baseurl + "?" + urllib.parse.urlencode(params))
         response = _safe_get(baseurl + "?" + urllib.parse.urlencode(params))
         # Returns None if error/no match
         if response is None:

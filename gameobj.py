@@ -1,12 +1,13 @@
 from typing import List, Dict
-
+import json
 
 class GameObj:
     def __init__(self, name:str,
                  genre:List[str],
                  developer: List[str],
                  publisher: List[str],
-                 series: Dict,
+                 series: str,
+                 series_games: List[str],
                  related: List[str],
                  prices: Dict[str, float],
                  platforms: List[Dict[str, str]],
@@ -33,7 +34,8 @@ class GameObj:
         self.genre: List[str] = genre
         self.developer: List[str] = developer
         self.publisher: List[str] = publisher
-        self.series: Dict = series
+        self.series: str = series
+        self.series_games: List[str] = series_games
         self.related: List = related
         self.prices: Dict[str, float] = prices
         self.platforms: List[Dict[str, str]] = platforms

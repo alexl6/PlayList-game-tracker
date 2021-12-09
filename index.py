@@ -60,15 +60,16 @@ def add_game(keyword: str) -> None:
     platforms: List[Dict[str, str]] = []
     if 'platforms' in IGDB_res and len(IGDB_res['platforms']) > 0:
         # TODO: Fix this
-        platforms = [{'name': x['name'], 'logo': x['platform_logo']['url']} for x in IGDB_res['platforms']]
+        platforms = [{'name': x['name'], 'logo': x['platform_logo']['url'][2:]} for x in IGDB_res['platforms']]
 
     # Game series
-    series: Dict = {'name': 'N/A', 'games': []}
+    series: str = ""
+    series_games: List[str] = []
     if 'collection' in IGDB_res and len(IGDB_res['collection']['games']) > 0:
-        series['name'] = IGDB_res['collection']['name']
-        series['games'] = [x['name'] for x in IGDB_res['collection']['games'] if x['category'] in {0, 6, 8, 9, 10, 11}]
+        series = IGDB_res['collection']['name']
+        series_games = [x['name'] for x in IGDB_res['collection']['games'] if x['category'] in {0, 6, 8, 9, 10, 11}]
 
-    # Realted games
+    # Related games
     related: List[str] = []
     if 'similar_games' in IGDB_res and len(IGDB_res['similar_games']) > 0:
         related = [x['name'] for x in IGDB_res['similar_games']]
@@ -77,12 +78,10 @@ def add_game(keyword: str) -> None:
     # Lookup in ITAD
     # TODO: Implement full ITAD feature set
     plain = ITAD.search(full_name)
-    prices = {'price': -1, 'lowest': -1, 'stores': List[str]}
+    prices = {'price': -1, 'lowest': -1}
     if plain is not None:
         lowest = ITAD.load_historical_low([plain])
         prices['lowest'] = lowest[plain][0]['price']
-    else:
-        prices['stores'] = []
 
     # Load OC score
     search_res = OCHandler.search(full_name)
@@ -102,11 +101,13 @@ def add_game(keyword: str) -> None:
         TTB = -1
 
     # TODO: Fix price
-    new_game = GameObj(full_name, genres, devs, publishers, series, related, prices, platforms,
-                       TTB, "url", "art", OC_score)
+    new_game = GameObj(full_name, genres, devs, publishers, series, series_games,
+                       related, prices, platforms, TTB, "url", "art", OC_score)
 
     # Add the newly created game object to the list
     games.append(new_game)
+    print(games[-1].name)
+    print(games[-1].developer[-1])
 
 
 # This function draws inspiration from contents on the following website:
@@ -126,13 +127,17 @@ def autocomplete(keyword: str) -> List[str]:
     return sorted(output.keys(), key=lambda x: output[x], reverse=True)
 
 
+def to_dict(obj):
+    return obj.__dict__
+
+
 # Flask handlers
 @app.route("/")
 def main_handler():
     name = request.args.get('username')
     if name is None:
         abort(400)
-    dummy = {"key": "value"}
+    dummy = {"key": "Hello world"}
     return json.dumps(dummy)
 
 
@@ -152,6 +157,10 @@ def autocomplete_handler():
         abort(400)
     return json.dumps(autocomplete(key))
 
+
+@app.route("/getgames")
+def getgames_handler():
+    return json.dumps(games, default=to_dict)
 
 # res = HtmlScraper().search(name=input("Enter a game:\n"))
 # for entry in res:
@@ -174,32 +183,32 @@ def autocomplete_handler():
 
 # Main method
 if __name__ == "__main__":
-
-    keyword = input("Enter the name of a game:\n")
-    # Lookup in IGDB
-    data1 = IGDB.search_game(keyword)[0]
-    full_name = data1['name']
-
-    # Lookup in ITAD
-    plain = ITAD.search(full_name)
-    lowest = ITAD.load_historical_low([plain])
-    lowest_price = lowest[plain][0]['price']
-
-    # Load OC score
-    ID = OCHandler.top_id(OCHandler.search(full_name))
-    OC_Score = OCHandler.top_critic_score(OCHandler.get_review(ID))
-
-    # Time to beat the game
-    TTB = HtmlScraper().search(name=full_name)[0].gameplayMain
-
-    print()
-    print("=====%s=====" % data1['name'])
-    print("Genre: %s" % ", ".join(x['name'] for x in data1['genres']))
-    print("Developed by: %s" % [x['company']['name'] for x in data1['involved_companies'] if x['developer'] == True][0])
-    print("Published by: %s" % [x['company']['name'] for x in data1['involved_companies'] if x['publisher'] == True][0])
-    print("Historic low price on Steam: %s" % str(round(lowest_price, 2)))
-    print("Average time to beat: %d hrs" % int(TTB))
-    print("OpenCritic score: %d" % OC_Score)
+    #
+    # keyword = input("Enter the name of a game:\n")
+    # # Lookup in IGDB
+    # data1 = IGDB.search_game(keyword)[0]
+    # full_name = data1['name']
+    #
+    # # Lookup in ITAD
+    # plain = ITAD.search(full_name)
+    # lowest = ITAD.load_historical_low([plain])
+    # lowest_price = lowest[plain][0]['price']
+    #
+    # # Load OC score
+    # ID = OCHandler.top_id(OCHandler.search(full_name))
+    # OC_Score = OCHandler.top_critic_score(OCHandler.get_review(ID))
+    #
+    # # Time to beat the game
+    # TTB = HtmlScraper().search(name=full_name)[0].gameplayMain
+    #
+    # print()
+    # print("=====%s=====" % data1['name'])
+    # print("Genre: %s" % ", ".join(x['name'] for x in data1['genres']))
+    # print("Developed by: %s" % [x['company']['name'] for x in data1['involved_companies'] if x['developer'] == True][0])
+    # print("Published by: %s" % [x['company']['name'] for x in data1['involved_companies'] if x['publisher'] == True][0])
+    # print("Historic low price on Steam: %s" % str(round(lowest_price, 2)))
+    # print("Average time to beat: %d hrs" % int(TTB))
+    # print("OpenCritic score: %d" % OC_Score)
 
     # Host of localhost when testing
-    app.run(host="localhost", port=8080, debug=True)
+    app.run(host="localhost", port=4567, debug=True)
