@@ -1,0 +1,31 @@
+div.gameCard {
+    display: inline-block;
+    text-align: left;
+    width: 85%;
+    margin-left: 7.5%;
+    margin-right: 7.5%;
+    margin-top: 10px;
+    /*box-shadow: #EEEEEE;*/
+    border: #555555;
+    display: block;
+    border-width: 2px;
+    border-style: solid;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);;
+}
+
+img.coverArt{
+    max-width: 60%;
+    margin-left: 20%;
+    margin-right: 20%;
+    margin-top: 10%;
+}
+
+div.leftSideBar{
+    display: inline-block;
+    max-width: 25%;
+}
+
+h1.gameTitle{
+    text-align: center;
+    font-size: medium;
+}

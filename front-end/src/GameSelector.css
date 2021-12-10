@@ -1,0 +1,59 @@
+#searchArea{
+    font-family: system-ui;
+    text-align: center;
+}
+
+.dropdownContainer {
+    position: relative;
+    display: inline-block;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.dropdownBtn{
+    border: none;
+    padding: 10px 10px;
+    min-width: 300px;
+}
+
+.dropdownBtn:hover, .dropdownBtn:focus {
+    background-color: azure;
+}
+
+/*Div containing dropdown for possible origins*/
+#originDropdownContent{
+    position: absolute;
+    background-color: #f6f6f6;
+    min-width: 20%;
+    border: 1px solid #EEEEEE;
+    z-index: 1;
+    box-shadow: gray;
+    max-height: 400px;
+    overflow-x: visible;
+    overflow-y: auto;
+}
+
+#originDropdownContent input, #originDropdownContent button{
+    display: inline-block;
+    padding: 10px 5px;
+    background-color: white;
+    width: 97%
+}
+
+#originDropdownContent input{
+    min-height: 30px;
+    padding:0;
+    margin:2px;
+    min-width: 300px;
+}
+
+#originDropdownContent button{
+    margin:0;
+    border: none;
+    text-align: left;
+}
+
+#originDropdownContent button:hover{
+    background-color: #EEEEEE;
+}
+

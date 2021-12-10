@@ -31,12 +31,27 @@ lastReq: float = time.time()
 
 # Helper functions
 def add_game(keyword: str) -> None:
+    """
+    Add a new game into the games list
+    :param keyword: Name of the new game to add
+    """
     # Lookup in IGDB
     IGDB_res = IGDB.search_game(keyword)
     # Stops if the game doesn't exist as an entry in IGDB
     if len(IGDB_res) == 0:
         return
-    IGDB_res = IGDB_res[0]
+    # Find the game with the most similar name in the result
+    # IGDB search doesn't always find the best match
+    most_similar = 0
+    similarity_score = fuzz.ratio(IGDB_res[0]['name'], keyword)
+    for i in range(len(IGDB_res)):
+        if fuzz.ratio(IGDB_res[i]['name'], keyword) > similarity_score:
+            similarity_score = fuzz.ratio(IGDB_res[i]['name'], keyword)
+            most_similar = i
+            print("%d - %s"%(similarity_score, IGDB_res[most_similar]['name']))
+
+    IGDB_res = IGDB_res[most_similar]
+
     # Extract useful data form the response
     full_name = IGDB_res['name']
     # Get game genres
@@ -85,7 +100,8 @@ def add_game(keyword: str) -> None:
     prices = {'price': -1, 'lowest': -1}
     if plain is not None:
         lowest = ITAD.load_historical_low([plain])
-        prices['lowest'] = lowest[plain][0]['price']
+        if len(lowest) > 0:
+            prices['lowest'] = lowest[plain][0]['price']
 
     # Load OC score
     search_res = OCHandler.search(full_name)
@@ -117,6 +133,11 @@ def add_game(keyword: str) -> None:
 # This function draws inspiration from contents on the following website:
 # https://www.geeksforgeeks.org/fuzzywuzzy-python-library/
 def autocomplete(keyword: str) -> List[str]:
+    """
+    Returns a list of possible games matching the keyword string
+    @param keyword: The keyword used to get search suggestions
+    @return: A list of matching game strings
+    """
     # Get suggestions from IGDB and OpenCritic search
     l1: List[str] = OCHandler.suggestions(keyword)
     l2: List[str] = IGDB.suggestions(keyword)
@@ -132,6 +153,11 @@ def autocomplete(keyword: str) -> List[str]:
 
 
 def to_dict(obj):
+    """
+    Returns the dictionary view of a given object
+    @param obj: A Python object
+    @return: Its dictionary view
+    """
     return obj.__dict__
 
 #TODO: Remove debug function
@@ -153,7 +179,7 @@ def addgame_handler():
     if name is None:
         abort(400)
     add_game(name)
-    return json.dumps("Done")
+    return json.dumps(games[-1], default=to_dict())
 
 
 @app.route("/autocomplete")
