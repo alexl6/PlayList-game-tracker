@@ -160,7 +160,7 @@ class IGDBHandler:
              collection.name, collection.games.name, collection.games.category, collection.url,
              similar_games.name, similar_games.genres.name, cover.url;
             search "%s";
-            where category = (0,3,6,8,9,10,11);
+            where category = (0,3,6,7,8,9,10,11);
             """%name
         )
         return json.loads(req)
@@ -171,7 +171,7 @@ class IGDBHandler:
             """
             fields name;
             search "%s";
-            where category = (0,3,6,8,9,10,11);
+            where category = (0,3,6,7,8,9,10,11);
             """%name
         )
         res = json.loads(req)

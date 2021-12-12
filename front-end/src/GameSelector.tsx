@@ -5,10 +5,10 @@ interface GameSelectorProps {
     suggestions: string[],            // Array of possible locations
     onUpdateSearchTerm(keyword : string): void,
     onUpdateGame(gameName: string): void,
+    onClearSearch():void,
 }
 
 interface GameSelectorState{
-    buttonDown: boolean,
     searchBox: string,
     prevSearchSuggest: number,   // The last time an search suggestion request was sent to server
 }
@@ -21,19 +21,18 @@ class GameSelector extends Component<GameSelectorProps, GameSelectorState> {
     constructor(props: GameSelectorProps) {
         super(props);
         this.state = {
-            buttonDown: false,
             searchBox: "",
             prevSearchSuggest: new Date().getTime(),
         }
-        this.showDropdown = this.showDropdown.bind(this);
+        this.clearSearchBox = this.clearSearchBox.bind(this);
     }
 
     // Control state of dropdown menu
-    showDropdown(){
-        let newState = !this.state.buttonDown;
+    clearSearchBox(){
         this.setState({
-            buttonDown: newState
-        })
+            searchBox: ""
+        });
+        this.props.onClearSearch();
     }
 
     /**
@@ -43,8 +42,7 @@ class GameSelector extends Component<GameSelectorProps, GameSelectorState> {
      */
     onGameSelect(e: number){
         this.setState({
-            searchBox: "",
-            buttonDown: false,
+            searchBox: ""
         })
         this.props.onUpdateGame(this.props.suggestions[e]);
     }
@@ -68,35 +66,28 @@ class GameSelector extends Component<GameSelectorProps, GameSelectorState> {
 
     render() {
         // Construct add game dropdown menu if the button is pressed
-        let dropdown;
-        console.log(this.state.buttonDown)
-        if(this.state.buttonDown){
-            let dropdownItems : any[] = [];
-            // Trivial loop: Loops through every game in this.props.suggestions
-            for(let i=0; i<this.props.suggestions.length; i++){
-                //TODO: Remove old code
-                // {this.props.suggestions[i][1]}  [{this.props.suggestions[i][0]}]
-                dropdownItems.push(
-                    <button key={i} value={i} onClick={() => this.onGameSelect(i)}>
-                        {this.props.suggestions[i]}
-                    </button>
-                );
-            }
-            // Add search box and wrap the dropdown menu items in a container
-            dropdown = (
-                <div id={"originDropdownContent"}>
-                    <input value={this.state.searchBox} placeholder="Enter the name of a game" onChange={this.onUserTyped}/>
-                    {dropdownItems}
-                </div>
-            )
-        }
-        // Renders the button with dropdown menu
-        return (
-            <div className={"dropdownContainer"}>
-                <button onClick={this.showDropdown} className={"dropdownBtn"}>
-                    Click to add a game
+        let dropdownItems : any[] = [];
+        // Trivial loop: Loops through every game in this.props.suggestions
+        for(let i=0; i<this.props.suggestions.length; i++){
+            dropdownItems.push(
+                <button key={i} value={i} onClick={() => this.onGameSelect(i)}>
+                    {this.props.suggestions[i]}
                 </button>
-                {dropdown}
+            );
+        }
+        // Add search box and wrap the dropdown menu items in a container
+
+
+        return (
+            <div>
+                <div className={"dropdownContainer"}>
+                    <div id={"originDropdownContent"}>
+                        <input value={this.state.searchBox} placeholder="Enter the name of a game" onChange={this.onUserTyped}/>
+                        {dropdownItems}
+                    </div>
+                </div>
+                <button onClick={this.clearSearchBox} className={"clearBtn"}> Clear search
+                </button>
             </div>
         )
     }

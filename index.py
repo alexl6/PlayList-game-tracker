@@ -141,9 +141,9 @@ def autocomplete(keyword: str) -> List[str]:
     @return: A list of matching game strings
     """
     # Get suggestions from IGDB and OpenCritic search
-    l1: List[str] = OCHandler.suggestions(keyword)
-    l2: List[str] = IGDB.suggestions(keyword)
-    l1 += l2
+    # l1: List[str] = OCHandler.suggestions(keyword)
+    l1: List[str] = IGDB.suggestions(keyword)
+    # l1 += l2
     output: Dict[str, int] = {}
     # Calculate the distance from suggestion to keyword
     for e in l1:
@@ -171,11 +171,7 @@ def get_games():
 # Flask handlers
 @app.route("/")
 def main_handler():
-    name = request.args.get('username')
-    if name is None:
-        abort(400)
-    dummy = {"key": "Hello world"}
-    return json.dumps(dummy)
+    return json.dumps([to_dict(x) for x in games_list])
 
 
 @app.route("/addgame")
@@ -183,7 +179,6 @@ def addgame_handler():
     name = request.args.get('name')
     if name is None:
         abort(400)
-    print(name)
     add_game(name)
 
     return json.dumps(to_dict(games_list[len(games_list) - 1]))

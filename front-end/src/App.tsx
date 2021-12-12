@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import logo from './logo.svg';
 import './App.css';
 import GameSelector from "./GameSelector";
-import GameCard from "./GameCard";
+import GameCards from "./GameCards";
 
 interface AppState {
   games: GameObj[];
@@ -35,18 +35,52 @@ class App extends Component<{}, AppState> {
             suggestions: []
         };
 
-        this.requestGame = this.requestGame.bind(this);
+        this.loadAllGames = this.loadAllGames.bind(this);
         this.getSuggestion = this.getSuggestion.bind(this);
         this.addGame = this.addGame.bind(this);
+        this.clearSearch = this.clearSearch.bind(this);
     }
 
-    //TODO: Remove placeholder code
-  requestGame = async() =>{
-        try{
-            console.log("Nothing")
-        } catch (e) {
-            alert("Error while attempting to contact the server.");
+    componentDidMount() {
+        this.loadAllGames();
+    }
+
+    // Load all games in the system upon refresh
+    loadAllGames = async()=>{
+        // Make request to Python server
+        let url =  "http://localhost:4567/";
+        let responsePromise = fetch(url);
+        let response = await responsePromise;
+        if (!response.ok) {
+            alert("Error " + response.status);
+            return;
         }
+        let allGames = await response.json();
+
+        // Construct a new game object from the returned data
+        let newGameList: GameObj[] = []
+        for (let game of allGames) {
+
+            let newGame:GameObj = new GameObj(
+                game['name'],
+                game['genre'],
+                game['developer'],
+                game['publisher'],
+                game['series'],
+                game['series_games'],
+                game['related'],
+                game['prices'],
+                game['platforms'],
+                game['time_to_beat'],
+                game['url'],
+                game['cover_art'],
+                game['opencritic']
+            );
+            newGameList= [... newGameList, newGame]
+        }
+        this.setState({
+            games: newGameList
+        })
     }
 
     getSuggestion = async (keyword: string) => {
@@ -79,7 +113,6 @@ class App extends Component<{}, AppState> {
                 alert("Error " + response.status)
             }
             let parsedObject = await response.json();
-            console.log(parsedObject)
             // Construct a new game object from the returned data
             let newGame:GameObj = new GameObj(
                 parsedObject['name'],
@@ -105,23 +138,20 @@ class App extends Component<{}, AppState> {
         }
     }
 
+    clearSearch(){
+        this.setState({suggestions: []})
+    }
+
 
   render() {
-    let gamecards:  any[] = [];
-      for (let gameEntry of this.state.games) {
-          gamecards.push(<GameCard key={gameEntry.name} game={gameEntry}/>)
-      }
 
     return (
         <div className="App">
             <header>Pretend this is a nice logo/header :)</header>
-                <label>
-                    Add a new game to the watch list:
-                    <GameSelector suggestions={this.state.suggestions} onUpdateSearchTerm={this.getSuggestion} onUpdateGame={this.addGame}/>
-                </label>
+                    <GameSelector onClearSearch={this.clearSearch} suggestions={this.state.suggestions} onUpdateSearchTerm={this.getSuggestion} onUpdateGame={this.addGame}/>
                 <br/>
             <br/>
-            {gamecards}
+            <GameCards games={this.state.games}/>
         </div>
         );
     }
