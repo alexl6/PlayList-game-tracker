@@ -1,9 +1,14 @@
 name: HCDE310
 channels:
 - conda-forge
+- defaults
 dependencies:
-- pip=21.3.1
-- beautifulsoup4=4.10.0
-- fuzzywuzzy=0.18.0
-- flask_cors=3.0.10
-- requests=2.26.0
+  - pip=21.3.1
+  - beautifulsoup4=4.10.0
+  - fuzzywuzzy=0.18.0
+  - flask_cors=3.0.10
+  - requests=2.26.0
+  - pip:
+    - bs4==0.0.1
+    - howlongtobeat-python-api==0.1.14
+prefix: /opt/anaconda3/envs/HCDE310

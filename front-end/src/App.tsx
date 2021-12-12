@@ -10,19 +10,21 @@ interface AppState {
 }
 
 // Holds the game object: Equivalent to gameobj on the serverside
-interface GameObj {
-    genre: string[];
-    developer: string[];
-    publisher: string[];
-    series: string;
-    seriesGames: string[];
-    related: string[];
-    prices: Map<string, number>;
-    platforms: Map<string, string>[];
-    timeToBeat: number;
-    url: string;
-    coverArt: string;
-    opencritic: number;
+class GameObj {
+    constructor(
+        public name: string,
+        public genre: string[],
+        public developer: string[],
+        public publisher: string[],
+        public series: string,
+        public seriesGames: string[],
+        public related: string[],
+        public prices: Map<string, number>,
+        public platforms: Map<string, string>[],
+        public timeToBeat: number,
+        public url: string,
+        public coverArt: string,
+        public opencritic: number,){}
 }
 
 class App extends Component<{}, AppState> {
@@ -61,7 +63,7 @@ class App extends Component<{}, AppState> {
             console.log(parsedObject)
             this.setState({suggestions: parsedObject});
         } catch (e) {
-            alert("There was an error getting autocomplete suggestions from the server");
+            alert("There was an error getting autocomplete suggestions from the server.\nIs the server running right now?");
             console.log(e);
         }
     }
@@ -78,14 +80,38 @@ class App extends Component<{}, AppState> {
             }
             let parsedObject = await response.json();
             console.log(parsedObject)
+            // Construct a new game object from the returned data
+            let newGame:GameObj = new GameObj(
+                parsedObject['name'],
+                parsedObject['genre'],
+                parsedObject['developer'],
+                parsedObject['publisher'],
+                parsedObject['series'],
+                parsedObject['series_games'],
+                parsedObject['related'],
+                parsedObject['prices'],
+                parsedObject['platforms'],
+                parsedObject['time_to_beat'],
+                parsedObject['url'],
+                parsedObject['cover_art'],
+                parsedObject['opencritic']
+            )
+            this.setState({
+                games: [...this.state.games, newGame],
+                suggestions: [],
+            })
         } catch (e) {
-            alert("There was an error adding game to the server")
+            alert("There was an error adding game to the server. .\nIs the server running right now?")
         }
     }
 
 
   render() {
-      let locations: [string,string][] = [["A", "a"], ["B","b"],["C", 'c']]
+    let gamecards:  any[] = [];
+      for (let gameEntry of this.state.games) {
+          gamecards.push(<GameCard key={gameEntry.name} game={gameEntry}/>)
+      }
+
     return (
         <div className="App">
             <header>Pretend this is a nice logo/header :)</header>
@@ -94,10 +120,11 @@ class App extends Component<{}, AppState> {
                     <GameSelector suggestions={this.state.suggestions} onUpdateSearchTerm={this.getSuggestion} onUpdateGame={this.addGame}/>
                 </label>
                 <br/>
-                <GameCard dummy={"dummy"}/>
+            <br/>
+            {gamecards}
         </div>
-    );
-  }
+        );
+    }
 }
 
 export default App;

@@ -24,7 +24,7 @@ app = Flask(__name__)
 CORS(app)
 
 # Global variables
-games: List[GameObj] = []
+games_list: List[GameObj] = []
 genres_dict: Dict[str, int] = {}
 suggestions_cache: List[str] = []
 lastReq: float = time.time()
@@ -93,6 +93,10 @@ def add_game(keyword: str) -> None:
     if 'similar_games' in IGDB_res and len(IGDB_res['similar_games']) > 0:
         related = [x['name'] for x in IGDB_res['similar_games']]
 
+    cover_art: str = ""
+    if 'cover' in IGDB_res and 'url' in IGDB_res['cover']:
+        cover_art = IGDB_res['cover']['url']
+        cover_art = "https:" + cover_art.replace("t_thumb", "t_cover_big")
 
     # Lookup in ITAD
     # TODO: Implement full ITAD feature set
@@ -122,12 +126,10 @@ def add_game(keyword: str) -> None:
 
     # TODO: Fix price
     new_game = GameObj(full_name, genres, devs, publishers, series, series_games,
-                       related, prices, platforms, TTB, "url", "art", OC_score)
+                       related, prices, platforms, TTB, "url", cover_art, OC_score)
 
     # Add the newly created game object to the list
-    games.append(new_game)
-    print(games[-1].name)
-    print(games[-1].developer[-1])
+    games_list.append(new_game)
 
 
 # This function draws inspiration from contents on the following website:
@@ -163,6 +165,9 @@ def to_dict(obj):
 #TODO: Remove debug function
 # add_game("Overcooked 2")
 
+def get_games():
+    return games_list
+
 # Flask handlers
 @app.route("/")
 def main_handler():
@@ -178,8 +183,10 @@ def addgame_handler():
     name = request.args.get('name')
     if name is None:
         abort(400)
+    print(name)
     add_game(name)
-    return json.dumps(games[-1], default=to_dict())
+
+    return json.dumps(to_dict(games_list[len(games_list) - 1]))
 
 
 @app.route("/autocomplete")
@@ -195,7 +202,7 @@ def autocomplete_handler():
 
 @app.route("/getgames")
 def getgames_handler():
-    return json.dumps(games, default=to_dict)
+    return json.dumps(games_list, default=to_dict)
 
 # res = HtmlScraper().search(name=input("Enter a game:\n"))
 # for entry in res:
