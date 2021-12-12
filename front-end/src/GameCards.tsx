@@ -12,7 +12,7 @@ class GameObj {
         public seriesGames: string[],
         public related: string[],
         public prices: Map<string, number>,
-        public platforms: Map<string, string>[],
+        public platforms: string [],
         public timeToBeat: number,
         public url: string,
         public coverArt: string,

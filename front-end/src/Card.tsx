@@ -11,7 +11,7 @@ class GameObj {
         public seriesGames: string[],
         public related: string[],
         public prices: Map<string, number>,
-        public platforms: Map<string, string>[],
+        public platforms: string [],
         public timeToBeat: number,
         public url: string,
         public coverArt: string,
@@ -25,17 +25,20 @@ interface CardProps{
 class Card extends Component<CardProps, {}>{
 
     render() {
-        console.log(this.props.game);
-        let devs: string = this.props.game.developer.length == 0 ? "N/A" : this.props.game.developer.join(",");
-        let publishers: string = this.props.game.publisher.length == 0 ? "N/A" : this.props.game.publisher.join(",");
-        let series = [];
+        // Combine data into string for output
+        let devs: string = this.props.game.developer.length == 0 ? "N/A" : this.props.game.developer.join(", ");
+        let publishers: string = this.props.game.publisher.length == 0 ? "N/A" : this.props.game.publisher.join(", ");
+        let genres: string = this.props.game.genre.length == 0 ? "N/A" : this.props.game.genre.join(", ")
+        // Display the game series if available
+        let series;
         if (this.props.game.series != ""){
-            series.push(<div className={"company-name"}> <b>Game series:</b>&#9; {this.props.game.series} </div>);
+            series = (<div className={"left-desc"}> <b>Game series:</b>&#9; {this.props.game.series} </div>);
         }
 
-        // Since data might not be available for all properties on the right side,
-        // we dynamically build the page
+        // The data for some fields on the right may not be available
+        // Skip those fields if the data is unavailable
         let rightSideOptional = [];
+        // Color code the bar representing OpenCritic score
         if (this.props.game.opencritic != -1){
             const styles = {
                 width: this.props.game.opencritic+'%',
@@ -43,15 +46,27 @@ class Card extends Component<CardProps, {}>{
             }
             rightSideOptional.push(
                 <div>
-                    <div className={"right-side"}> <b>OpenCritic (Top critic score):</b></div>
+                    <div className={"right-side-desc"}> <b>OpenCritic (Top critic score):</b></div>
                     <div className="bar-container">
                         <div className="bar" style={styles}> <b>{this.props.game.opencritic} </b></div>
                     </div>
                 </div>);
         }
-
+        // Display the playtime data
         if (this.props.game.timeToBeat != -1){
+            rightSideOptional.push(
+              <div>
+                  <div className={"right-side-desc"}> <b>How long it takes to beat the game (Avg):</b></div>
+                  <div className={"large-num"}> {this.props.game.timeToBeat} hrs </div>
+                </div>);
+        }
 
+        if (this.props.game.platforms.length != 0){
+            rightSideOptional.push(
+              <div>
+                  <div className={"right-side-desc"}> <b>Available on:</b></div>
+                  <div className={"platform-container"}> {this.props.game.platforms.join(", ")} </div>
+              </div>);
         }
 
         return (
@@ -59,8 +74,9 @@ class Card extends Component<CardProps, {}>{
                 <div className={"card-left"}>
                     <h1 className={"gameTitle"}>{this.props.game.name}</h1>
                     <img className="coverArt" src={this.props.game.coverArt} alt={this.props.game.name}/>
-                    <div className={"company-name"}> <b>Developer:</b>&#9; {devs} </div>
-                    <div className={"company-name"}> <b>Publisher: </b>&#9; {publishers} </div>
+                    <div className={"left-desc"}> <b>Developer:</b>&#9; {devs} </div>
+                    <div className={"left-desc"}> <b>Publisher: </b>&#9; {publishers} </div>
+                    <div className={"left-desc"}> <b>Genres: </b>&#9; {genres} </div>
                     {series}
                 </div>
                 <div className={"card-right"}>

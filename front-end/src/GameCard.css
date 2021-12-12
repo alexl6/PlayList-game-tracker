@@ -68,23 +68,18 @@ img.coverArt{
     max-width: 100%;
 }
 
-/*div.leftSideBar{*/
-/*    display: inline-block;*/
-/*    max-width: 25%;*/
-/*}*/
-
 h1.gameTitle{
     text-align: center;
-    font-size: medium;
+    font-size: large;
 }
 
-.company-name{
+.left-desc{
     text-align: left;
     font-size: small;
-    margin: 1% auto;
+    margin: 1.5% auto;
 }
 
-.right-side{
+.right-side-desc{
     text-align: left;
     font-size: medium;
     margin: auto 2%;
@@ -111,4 +106,9 @@ h1.gameTitle{
     text-align: right;
     padding-right: 5%;
     font-size: large;
+}
+
+.platform-container{
+    width: 80%;
+    margin: auto 10%;
 }
