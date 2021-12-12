@@ -72,10 +72,10 @@ class ITADHandler:
                   'optional': 'metacritic'}
         return _safe_get(baseurl + "?" + urllib.parse.urlencode(params))
 
-    def get_historic_low(self, game: str) -> dict:
+    def get_lowest_price(self, game: str) -> dict:
         """
         Requests the historical lowest price of the games on the Steam game store
-        :param game: A game's name (string)
+        :param game: A game's name in plain format (string)
         :return: A JSON file containing historic lowest price information about the games
         """
         baseurl = 'https://api.isthereanydeal.com/v01/game/storelow/'
@@ -90,7 +90,7 @@ class ITADHandler:
     def get_current_price(self, game: str) -> dict:
         """
         Requests the current lowest price of the games on the Steam game store
-        :param game: A game's name (string)
+        :param game: A game's name in plain format (string)
         :return: A JSON file containing current price information about the games
         """
         baseurl = 'https://api.isthereanydeal.com/v01/game/prices/'
@@ -102,11 +102,40 @@ class ITADHandler:
             return None
         return json.loads(data)['data']
 
+    def get_price_data(self, game: str) -> dict:
+        """
+        Generate a dictionary summarizing the price information about a given game
+        :param game: Game's name in plain format
+        :return: A dictionary of price data
+        """
+        lowest = self.get_lowest_price(game)
+        current = self.get_current_price(game)
+        # Returns null if either is unavailable
+        if lowest is None or current is None:
+            return None
+
+        output:dict = {
+            'lowest': min([x['price'] for x in lowest[game]]),
+            'normal': min([x['price_old'] for x in current[game]['list']])
+        }
+        current_low:float = current[game]['list'][0]['price_new']
+        current_low_stores: List[str] = []
+        for store in current[game]['list']:
+            if store['price_new'] < current_low:
+                current_low = store['price_new']
+                current_low_stores = [store['shop']['name']]
+            elif store['price_new'] == current_low:
+                current_low_stores.append(store['shop']['name'])
+        output['current_low']: float = current_low
+        output['current_low_stores']: List[str] = current_low_stores
+        output['percent_off']:int = int((output['normal'] - current_low) / output['normal'] * 100)
+        return output
+
     def search(self, game: str) -> str:
         """
         Performs lookup for the plain of a given game title.
         :param game: Name of the game
-        :return: The matching plain in string
+        :return: The game's name in plain format
         """
         baseurl = "https://api.isthereanydeal.com/v02/game/plain/"
         params = {'key': self.key, 'title': game}
@@ -119,7 +148,7 @@ class ITADHandler:
             return None
         return response['data']['plain']
 
-# Demo code for the class ported from HW5
+# Test code, partially from hw5 pt2
 if __name__ == "__main__":
     from keys import ITAD_key
     handler = ITADHandler(ITAD_key)
@@ -130,10 +159,7 @@ if __name__ == "__main__":
 
     print(plain)
 
-    val = handler._get_current_price(plain)
-    print(val)
-    val = json.loads(val)
-    print(val)
+    val = handler.get_price_data(plain)
     exit()
     # Caches the result to avoid exceeding request rate limit
     # Get the list of top 50 games on IsThereAnyDeal

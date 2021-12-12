@@ -1,4 +1,4 @@
-from typing import List, Dict
+from typing import List
 import json
 
 class GameObj:
@@ -9,7 +9,7 @@ class GameObj:
                  series: str,
                  series_games: List[str],
                  related: List[str],
-                 prices: Dict[str, float],
+                 prices: dict,
                  platforms: List[str],
                  time_to_beat: float,
                  url: str,
@@ -37,7 +37,7 @@ class GameObj:
         self.series: str = series
         self.series_games: List[str] = series_games
         self.related: List = related
-        self.prices: Dict[str, float] = prices
+        self.prices: dict = prices
         self.platforms: List[str] = platforms
         self.time_to_beat: float = time_to_beat
         self.url: str = url

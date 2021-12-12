@@ -100,11 +100,10 @@ def add_game(keyword: str) -> None:
     # Lookup in ITAD
     # TODO: Implement full ITAD feature set
     plain = ITAD.search(full_name)
-    prices = {'price': -1, 'lowest': -1}
+    prices = None
     if plain is not None:
-        lowest = ITAD.load_historical_low(plain)
-        if len(lowest) > 0:
-            prices['lowest'] = lowest[plain][0]['price']
+        price_data = ITAD.get_price_data(plain)
+        prices = price_data
 
     # Load OC score
     search_res = OCHandler.search(full_name)
