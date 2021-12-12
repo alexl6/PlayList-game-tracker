@@ -158,9 +158,9 @@ class IGDBHandler:
             fields name, involved_companies.company.name, involved_companies.developer,
              involved_companies.publisher, genres.name, platforms.name, platforms.platform_logo.url, 
              collection.name, collection.games.name, collection.games.category, collection.url,
-             similar_games.name, similar_games.genres.name;
+             similar_games.name, similar_games.genres.name, cover.url;
             search "%s";
-            where category = (0,6,8,9,10,11);
+            where category = (0,3,6,8,9,10,11);
             """%name
         )
         return json.loads(req)
@@ -171,7 +171,7 @@ class IGDBHandler:
             """
             fields name;
             search "%s";
-            where category = (0,6,8,9,10,11);
+            where category = (0,3,6,8,9,10,11);
             """%name
         )
         res = json.loads(req)
@@ -204,5 +204,5 @@ if __name__ == "__main__":
 
 
     keyword = input("Enter a game:\n")
-    print(test.suggestions(keyword))
+    print(test.search_game(keyword))
     exit()
