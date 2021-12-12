@@ -10,7 +10,7 @@ class GameObj:
                  series_games: List[str],
                  related: List[str],
                  prices: Dict[str, float],
-                 platforms: List[Dict[str, str]],
+                 platforms: List[str],
                  time_to_beat: float,
                  url: str,
                  cover_art: str,
@@ -38,7 +38,7 @@ class GameObj:
         self.series_games: List[str] = series_games
         self.related: List = related
         self.prices: Dict[str, float] = prices
-        self.platforms: List[Dict[str, str]] = platforms
+        self.platforms: List[str] = platforms
         self.time_to_beat: float = time_to_beat
         self.url: str = url
         self.cover_art: str = cover_art

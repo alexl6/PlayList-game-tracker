@@ -76,10 +76,9 @@ def add_game(keyword: str) -> None:
             publishers = temp[:min(2, len(temp))]
 
     # Get available platforms
-    platforms: List[Dict[str, str]] = []
+    platforms: List[str] = []
     if 'platforms' in IGDB_res and len(IGDB_res['platforms']) > 0:
-        # TODO: Fix this
-        platforms = [{'name': x['name'], 'logo': x['platform_logo']['url'][2:]} for x in IGDB_res['platforms']]
+        platforms = [x['name'] for x in IGDB_res['platforms']]
 
     # Game series
     series: str = ""
@@ -103,7 +102,7 @@ def add_game(keyword: str) -> None:
     plain = ITAD.search(full_name)
     prices = {'price': -1, 'lowest': -1}
     if plain is not None:
-        lowest = ITAD.load_historical_low([plain])
+        lowest = ITAD.load_historical_low(plain)
         if len(lowest) > 0:
             prices['lowest'] = lowest[plain][0]['price']
 
