@@ -29,7 +29,7 @@ div.gameCard {
 
 .flex-card {
   background-color: #f1f1f1;
-  padding: 10px;
+  padding: 5px;
   flex: 50%;
   margin: 0.5% 1%;
   box-shadow: 2px 3px 2px rgba(0, 0, 0, 0.25), -2px 4px 2px rgba(0, 0, 0, 0.25);
@@ -61,6 +61,7 @@ div.gameCard {
     width: 65%;
     border: #282c34 1px;
     border-style: solid;
+    padding-left: 1%;
     float: left
 }
 
@@ -106,6 +107,34 @@ h1.gameTitle{
     text-align: right;
     padding-right: 5%;
     font-size: large;
+}
+
+.price-bar-right {
+    margin: 3% auto;
+    padding: 0px;
+    width: 80%;
+    max-width: 500px;
+    border: 1px solid #555555;
+    background-color: #9DCC89;
+    height: 30px;
+}
+
+.price-bar-right .price-bar-left {
+    height: 100%;
+    text-align: right;
+    padding-right: 2%;
+    font-size: small;
+}
+
+.price-bar-labels-container{
+    display: flex;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.price-bar-label{
+    flex:50%;
+    font-size: small;
 }
 
 .platform-container{

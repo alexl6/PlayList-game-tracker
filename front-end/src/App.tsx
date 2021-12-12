@@ -1,5 +1,4 @@
 import React, {Component} from 'react';
-import logo from './logo.svg';
 import './App.css';
 import GameSelector from "./GameSelector";
 import GameCards from "./GameCards";
@@ -19,7 +18,7 @@ class GameObj {
         public series: string,
         public seriesGames: string[],
         public related: string[],
-        public prices: Map<string, number>,
+        public prices: any,
         public platforms: string [],
         public timeToBeat: number,
         public url: string,
@@ -82,7 +81,7 @@ class App extends Component<{}, AppState> {
                 game['cover_art'],
                 game['opencritic']
             );
-            newGameList= [... newGameList, newGame]
+            newGameList = [...newGameList, newGame]
         }
         this.setState({
             games: newGameList

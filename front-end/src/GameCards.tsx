@@ -11,7 +11,7 @@ class GameObj {
         public series: string,
         public seriesGames: string[],
         public related: string[],
-        public prices: Map<string, number>,
+        public prices: any,
         public platforms: string [],
         public timeToBeat: number,
         public url: string,
