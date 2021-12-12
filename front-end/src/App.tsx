@@ -41,11 +41,17 @@ class App extends Component<{}, AppState> {
         this.clearSearch = this.clearSearch.bind(this);
     }
 
+    /**
+     * Trigger the load game method to request all games from the server
+     * when the page becomes visible
+     */
     componentDidMount() {
         this.loadAllGames();
     }
 
-    // Load all games in the system upon refresh
+    /**
+     * Load all games in the system upon refresh/initial load
+     */
     loadAllGames = async()=>{
         // Make request to Python server
         let url =  "http://localhost:4567/";
@@ -83,6 +89,10 @@ class App extends Component<{}, AppState> {
         })
     }
 
+    /**
+     * Get a list of games matching the search term from the server
+     * @param keyword Search term from the user
+     */
     getSuggestion = async (keyword: string) => {
         console.log(keyword)
         try {
@@ -102,7 +112,11 @@ class App extends Component<{}, AppState> {
         }
     }
 
-
+    /**
+     * Add a new game. Passes the name of the game to add to server.
+     * Receive the processed game data from the server.
+     * @param name Name of the selected game
+     */
     addGame = async(name: string) => {
         console.log(name)
         try{
@@ -138,13 +152,15 @@ class App extends Component<{}, AppState> {
         }
     }
 
+    /**
+     * Clears the cached search suggestions
+     */
     clearSearch(){
         this.setState({suggestions: []})
     }
 
 
   render() {
-
     return (
         <div className="App">
             <header>Pretend this is a nice logo/header :)</header>

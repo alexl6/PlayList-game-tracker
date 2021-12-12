@@ -27,7 +27,9 @@ class GameSelector extends Component<GameSelectorProps, GameSelectorState> {
         this.clearSearchBox = this.clearSearchBox.bind(this);
     }
 
-    // Control state of dropdown menu
+    /**
+     * Clear & collapse the search box
+     */
     clearSearchBox(){
         this.setState({
             searchBox: ""
@@ -81,7 +83,7 @@ class GameSelector extends Component<GameSelectorProps, GameSelectorState> {
         return (
             <div>
                 <div className={"dropdownContainer"}>
-                    <div id={"originDropdownContent"}>
+                    <div id={"searchDropdownContent"}>
                         <input value={this.state.searchBox} placeholder="Enter the name of a game" onChange={this.onUserTyped}/>
                         {dropdownItems}
                     </div>
