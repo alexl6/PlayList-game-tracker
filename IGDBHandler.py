@@ -68,8 +68,6 @@ class IGDBHandler:
         # Make request
         auth = safe_get(req)
 
-        # TODO: Remove debug code
-        print(auth)
         # Load request & cache the access token
         auth = json.loads(auth)
 
@@ -152,11 +150,16 @@ class IGDBHandler:
             'Incorrect type of argument \'query\', only Apicalypse-like strings or Apicalypse objects are allowed')
 
     def search_game(self, name: str) -> List[dict]:
+        """
+        Searches a game & get a list of data about games matching the search term
+        :param name: Name of the game
+        :return: A list of dictionaries representing games matching the search term
+        """
         req = self.api_request(
             'games',
             """
             fields name, involved_companies.company.name, involved_companies.developer,
-             involved_companies.publisher, genres.name, platforms.name, platforms.platform_logo.url, 
+             involved_companies.publisher, genres.name, platforms.name, 
              collection.name, collection.games.name, collection.games.category, collection.url,
              similar_games.name, similar_games.genres.name, cover.url;
             search "%s";
@@ -165,14 +168,19 @@ class IGDBHandler:
         )
         return json.loads(req)
 
-    def suggestions(self, name: str) -> List[str]:
+    def suggestions(self, keyword: str) -> List[str]:
+        """
+        Get a list of suggested games based on the provided keyword
+        :param keyword: Search term to get suggestions for
+        :return: A list of strings (suggested game names)
+        """
         req = self.api_request(
             'games',
             """
             fields name;
             search "%s";
             where category = (0,3,6,7,8,9,10,11);
-            """%name
+            """ % keyword
         )
         res = json.loads(req)
         if len(res) == 0:
