@@ -90,7 +90,7 @@ class Card extends Component<CardProps, {}>{
         if (this.props.game.platforms.length > 0){
             rightSideOptional.push(
               <div>
-                  <div className={"right-side-desc"}> <b>Other games in this series:</b></div>
+                  <div className={"right-side-desc"}> <b>Available on:</b></div>
                   <div className={"platform-container"}> {this.props.game.platforms.join(", ")} </div>
               </div>);
         }
