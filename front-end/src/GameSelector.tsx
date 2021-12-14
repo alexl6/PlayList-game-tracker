@@ -11,6 +11,7 @@ interface GameSelectorProps {
 interface GameSelectorState{
     searchBox: string,
     prevSearchSuggest: number,   // The last time an search suggestion request was sent to server
+    timeout: any
 }
 
 /**
@@ -23,6 +24,7 @@ class GameSelector extends Component<GameSelectorProps, GameSelectorState> {
         this.state = {
             searchBox: "",
             prevSearchSuggest: new Date().getTime(),
+            timeout: 0,
         }
         this.clearSearchBox = this.clearSearchBox.bind(this);
     }
@@ -57,12 +59,18 @@ class GameSelector extends Component<GameSelectorProps, GameSelectorState> {
             searchBox: event.target.value
         });
         let currTime = new Date().getTime()
-        if(currTime - this.state.prevSearchSuggest > 250){
+        if(currTime - this.state.prevSearchSuggest > 100){
             this.setState({
                 prevSearchSuggest: currTime
             })
             this.props.onUpdateSearchTerm(event.target.value);
         }
+
+        if(this.state.timeout) clearTimeout(this.state.timeout);
+        this.setState({
+            timeout: setTimeout(() => {
+                this.props.onUpdateSearchTerm(event.target.value)}, 200)
+            });
     }
 
 

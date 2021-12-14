@@ -25,12 +25,13 @@ interface CardProps{
 class Card extends Component<CardProps, {}>{
 
     render() {
-        // Combine data into string for output
+                // Combine data into string for output
         let devs: string = this.props.game.developer.length === 0 ? "N/A" : this.props.game.developer.join(", ");
         let publishers: string = this.props.game.publisher.length === 0 ? "N/A" : this.props.game.publisher.join(", ");
         let genres: string = this.props.game.genre.length === 0 ? "N/A" : this.props.game.genre.join(", ")
         // Display the game series if available
         let series;
+        let seriesGames;
         if (this.props.game.series !== ""){
             series = (<div className={"left-desc"}> <b>Game series:</b>&#9; {this.props.game.series} </div>);
         }
@@ -60,7 +61,7 @@ class Card extends Component<CardProps, {}>{
                     </div>
                     <br/>
                 </div>
-            )
+            );
         }
         // Display the playtime data
         if (this.props.game.timeToBeat !== -1){
@@ -86,11 +87,27 @@ class Card extends Component<CardProps, {}>{
         }
 
 
-        if (this.props.game.platforms.length !== 0){
+        if (this.props.game.platforms.length > 0){
             rightSideOptional.push(
               <div>
-                  <div className={"right-side-desc"}> <b>Available on:</b></div>
+                  <div className={"right-side-desc"}> <b>Other games in this series:</b></div>
                   <div className={"platform-container"}> {this.props.game.platforms.join(", ")} </div>
+              </div>);
+        }
+
+        if (this.props.game.series !== ""){
+            let seriesGamesList: any[] = [];
+            for(let game of this.props.game.seriesGames){
+                seriesGamesList.push(
+                    <div>
+                        {game}
+                    </div>
+                )
+            }
+            rightSideOptional.push(
+                <div>
+                  <div className={"right-side-desc"}> <b>Other games in this series:</b></div>
+                  <div className={"series-games-container"}> {seriesGamesList} </div>
               </div>);
         }
 

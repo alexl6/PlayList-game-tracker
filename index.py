@@ -86,6 +86,9 @@ def add_game(keyword: str) -> None:
     if 'collection' in IGDB_res and len(IGDB_res['collection']['games']) > 0:
         series = IGDB_res['collection']['name']
         series_games = [x['name'] for x in IGDB_res['collection']['games'] if x['category'] in {0, 6, 8, 9, 10, 11}]
+        if len(series_games) >= 4:
+            series_games = series_games[:5]
+            series_games.append("...")
 
     # Related games
     related: List[str] = []

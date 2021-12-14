@@ -10,7 +10,7 @@ div.gameCard {
     margin-right: 7.5%;
     margin-top: 10px;
     /*box-shadow: #EEEEEE;*/
-    border: #555555;
+    /*border: #555555;*/
     display: block;
     border-width: 2px;
     border-style: solid;
@@ -51,17 +51,17 @@ div.gameCard {
 }
 
 .card-left{
-    width: 35%;
-    border: #282c34 1px;
-    border-style: solid;
+    width: 33%;
+    /*border: #282c34 1px;*/
+    /*border-style: solid;*/
     float: left
 }
 
 .card-right{
-    width: 65%;
-    border: #282c34 1px;
-    border-style: solid;
-    padding-left: 1%;
+    width: 63%;
+    /*border: #282c34 1px;*/
+    /*border-style: solid;*/
+    padding-left: 5%;
     float: left
 }
 
@@ -140,4 +140,10 @@ h1.gameTitle{
 .platform-container{
     width: 80%;
     margin: auto 10%;
+}
+
+.series-games-container{
+    width: 80%;
+    text-align: left;
+    padding-left: 10%;
 }

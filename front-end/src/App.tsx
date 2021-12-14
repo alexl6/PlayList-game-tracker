@@ -160,13 +160,19 @@ class App extends Component<{}, AppState> {
 
 
   render() {
+        let gameLibrary = (
+            <div className={"library-placeholder"}> Your play list is empty. Add your first game here ⬆️</div>
+        );
+        if (this.state.games.length !== 0){
+            gameLibrary = (<GameCards games={this.state.games}/>);
+        }
     return (
         <div className="App">
             <header>Pretend this is a nice logo/header :)</header>
                     <GameSelector onClearSearch={this.clearSearch} suggestions={this.state.suggestions} onUpdateSearchTerm={this.getSuggestion} onUpdateGame={this.addGame}/>
                 <br/>
             <br/>
-            <GameCards games={this.state.games}/>
+            {gameLibrary}
         </div>
         );
     }

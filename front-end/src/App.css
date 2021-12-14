@@ -28,6 +28,11 @@
   color: #61dafb;
 }
 
+.library-placeholder{
+  padding-top: 2%;
+  font-size: x-large;
+}
+
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);
