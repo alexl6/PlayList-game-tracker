@@ -86,8 +86,6 @@ class GameSelector extends Component<GameSelectorProps, GameSelectorState> {
             );
         }
         // Add search box and wrap the dropdown menu items in a container
-
-
         return (
             <div>
                 <div className={"dropdownContainer"}>

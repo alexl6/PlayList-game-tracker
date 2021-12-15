@@ -119,6 +119,9 @@ class App extends Component<{}, AppState> {
      * @param name Name of the selected game
      */
     addGame = async(name: string) => {
+        this.setState({
+            suggestions: []
+        })
         console.log(name)
         try{
             let url = this.state.server + "addgame?name=" + name;
@@ -145,8 +148,7 @@ class App extends Component<{}, AppState> {
                 parsedObject['opencritic']
             )
             this.setState({
-                games: [...this.state.games, newGame],
-                suggestions: [],
+                games: [...this.state.games, newGame]
             })
         } catch (e) {
             alert("There was an error adding game to the server. .\nIs the server running right now?")
