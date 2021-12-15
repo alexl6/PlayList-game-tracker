@@ -1,8 +1,9 @@
-pip=21.3.1
-beautifulsoup4=4.10.0
-fuzzywuzzy=0.18.0
-flask_cors=3.0.10
-requests=2.26.0
+beautifulsoup4==4.10.0
+fuzzywuzzy==0.18.0
+flask==2.0.2
+flask_cors==3.0.10
+requests==2.26.0
 bs4==0.0.1
+urllib3==1.26.7
 certifi==2021.10.8
 HowLongToBeat-Python-API==0.1.14
