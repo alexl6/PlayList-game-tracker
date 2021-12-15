@@ -6,11 +6,12 @@ interface GameSelectorProps {
     onUpdateSearchTerm(keyword : string): void,
     onUpdateGame(gameName: string): void,
     onClearSearch():void,
+    onClearGames(): void
 }
 
 interface GameSelectorState{
     searchBox: string,
-    prevSearchSuggest: number,   // The last time an search suggestion request was sent to server
+    // prevSearchSuggest: number,   // The last time an search suggestion request was sent to server
     timeout: any
 }
 
@@ -23,10 +24,11 @@ class GameSelector extends Component<GameSelectorProps, GameSelectorState> {
         super(props);
         this.state = {
             searchBox: "",
-            prevSearchSuggest: new Date().getTime(),
+            // prevSearchSuggest: new Date().getTime(),
             timeout: 0,
         }
         this.clearSearchBox = this.clearSearchBox.bind(this);
+        this.clearAllGames = this.clearAllGames.bind(this);
     }
 
     /**
@@ -34,10 +36,22 @@ class GameSelector extends Component<GameSelectorProps, GameSelectorState> {
      */
     clearSearchBox(){
         this.setState({
-            searchBox: ""
+            searchBox: "",
+            timeout:0
         });
         this.props.onClearSearch();
     }
+
+    /**
+     * Clear all games
+     */
+         clearAllGames(){
+            this.setState({
+                searchBox: "",
+                timeout: 0
+            });
+            this.props.onClearGames();
+        }
 
     /**
      * Handle user clicking on a game in the list of suggestions in the dropdown menu
@@ -46,7 +60,8 @@ class GameSelector extends Component<GameSelectorProps, GameSelectorState> {
      */
     onGameSelect(e: number){
         this.setState({
-            searchBox: ""
+            searchBox: "",
+            timeout: 0
         })
         this.props.onUpdateGame(this.props.suggestions[e]);
     }
@@ -58,13 +73,13 @@ class GameSelector extends Component<GameSelectorProps, GameSelectorState> {
         this.setState({
             searchBox: event.target.value
         });
-        let currTime = new Date().getTime()
-        if(currTime - this.state.prevSearchSuggest > 100){
-            this.setState({
-                prevSearchSuggest: currTime
-            })
-            this.props.onUpdateSearchTerm(event.target.value);
-        }
+        // let currTime = new Date().getTime()
+        // if(currTime - this.state.prevSearchSuggest > 100){
+        //     this.setState({
+        //         prevSearchSuggest: currTime
+        //     })
+        //     this.props.onUpdateSearchTerm(event.target.value);
+        // }
 
         if(this.state.timeout) clearTimeout(this.state.timeout);
         this.setState({
@@ -95,6 +110,8 @@ class GameSelector extends Component<GameSelectorProps, GameSelectorState> {
                     </div>
                 </div>
                 <button onClick={this.clearSearchBox} className={"clearBtn"}> Clear search
+                </button>
+                <button onClick={this.clearAllGames} className={"clearBtn"}> Clear all games
                 </button>
             </div>
         )

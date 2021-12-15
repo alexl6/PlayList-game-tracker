@@ -34,6 +34,7 @@ class App extends Component<{}, AppState> {
             games: [],
             suggestions: [],
             server: "https://alexl6-playlist.azurewebsites.net/",
+            // server: "http://localhost:4567/",
         };
 
         this.loadAllGames = this.loadAllGames.bind(this);
@@ -156,6 +157,30 @@ class App extends Component<{}, AppState> {
     }
 
     /**
+     * Clears all games
+     */
+    clearAllGames = async() =>{
+        try {
+            let url =  this.state.server + "clearall";
+            let responsePromise = fetch(url);
+            let response = await responsePromise;
+            if (!response.ok) {
+                alert("Error " + response.status);
+                return;
+            }
+            let parsedObject = await response.json();
+            console.log(parsedObject)
+            this.setState({
+                suggestions: [],
+                games: []
+            });
+        } catch (e) {
+            alert("There was an error getting clearing games from the server.\nIs the server running right now?");
+            console.log(e);
+        }
+    }
+
+    /**
      * Clears the cached search suggestions
      */
     clearSearch(){
@@ -173,7 +198,7 @@ class App extends Component<{}, AppState> {
     return (
         <div className="App">
             <header>Play List 🕹️</header>
-                    <GameSelector onClearSearch={this.clearSearch} suggestions={this.state.suggestions} onUpdateSearchTerm={this.getSuggestion} onUpdateGame={this.addGame}/>
+                    <GameSelector onClearGames={this.clearAllGames} onClearSearch={this.clearSearch} suggestions={this.state.suggestions} onUpdateSearchTerm={this.getSuggestion} onUpdateGame={this.addGame}/>
                 <br/>
             <br/>
             {gameLibrary}

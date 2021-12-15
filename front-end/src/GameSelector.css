@@ -6,13 +6,13 @@
 .dropdownContainer {
     display: inline-block;
     margin-bottom: 23px;
-    width: 70%;
+    width: 60%;
 }
 
 #searchDropdownContent{
     position: absolute;
     background-color: #f6f6f6;
-    width:70%;
+    width:60%;
     border: 1px solid #EEEEEE;
     z-index: 1;
     box-shadow: 2px 3px 2px rgba(0, 0, 0, 0.1), -2px 3px 2px rgba(0, 0, 0, 0.1);
@@ -40,11 +40,19 @@
 }
 
 #searchDropdownContent button:hover{
-    background-color: #EEEEEE;
+    background-color: #d6d6d6;
 }
 
 .clearBtn{
     display: inline-block;
     margin-left: 20px;
     padding: 8px 5px;
+}
+
+/* Responsive layout - makes a one column-layout instead of two-column layout */
+@media (max-width: 900px) {
+    .clearBtn{
+        margin-left: 0;
+        margin-top: 5%;
+    }
 }
