@@ -31,7 +31,6 @@ class Card extends Component<CardProps, {}>{
         let genres: string = this.props.game.genre.length === 0 ? "N/A" : this.props.game.genre.join(", ")
         // Display the game series if available
         let series;
-        let seriesGames;
         if (this.props.game.series !== ""){
             series = (<div className={"left-desc"}> <b>Game series:</b>&#9; {this.props.game.series} </div>);
         }
