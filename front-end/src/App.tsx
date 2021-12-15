@@ -5,7 +5,8 @@ import GameCards from "./GameCards";
 
 interface AppState {
   games: GameObj[];
-  suggestions: string[]
+  suggestions: string[];
+  server: string;
 }
 
 // Holds the game object: Equivalent to gameobj on the serverside
@@ -31,7 +32,8 @@ class App extends Component<{}, AppState> {
         super(props);
         this.state = {
             games: [],
-            suggestions: []
+            suggestions: [],
+            server: "https://alexl6-playlist.azurewebsites.net/",
         };
 
         this.loadAllGames = this.loadAllGames.bind(this);
@@ -53,7 +55,7 @@ class App extends Component<{}, AppState> {
      */
     loadAllGames = async()=>{
         // Make request to Python server
-        let url =  "http://localhost:4567/";
+        let url =  this.state.server;
         let responsePromise = fetch(url);
         let response = await responsePromise;
         if (!response.ok) {
@@ -95,7 +97,7 @@ class App extends Component<{}, AppState> {
     getSuggestion = async (keyword: string) => {
         console.log(keyword)
         try {
-            let url =  "http://localhost:4567/autocomplete?key=" + keyword;
+            let url =  this.state.server + "autocomplete?key=" + keyword;
             let responsePromise = fetch(url);
             let response = await responsePromise;
             if (!response.ok) {
@@ -119,7 +121,7 @@ class App extends Component<{}, AppState> {
     addGame = async(name: string) => {
         console.log(name)
         try{
-            let url = "http://localhost:4567/addgame?name=" + name;
+            let url = this.state.server + "addgame?name=" + name;
             let responsePromise = fetch(url);
             let response = await responsePromise;
             if(!response.ok){
@@ -168,7 +170,7 @@ class App extends Component<{}, AppState> {
         }
     return (
         <div className="App">
-            <header>Pretend this is a nice logo/header :)</header>
+            <header>Play List 🕹️</header>
                     <GameSelector onClearSearch={this.clearSearch} suggestions={this.state.suggestions} onUpdateSearchTerm={this.getSuggestion} onUpdateGame={this.addGame}/>
                 <br/>
             <br/>
