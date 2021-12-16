@@ -100,8 +100,12 @@ def add_game(keyword: str) -> None:
     plain = ITAD.search(full_name)
     prices = None
     if plain is not None:
-        price_data = ITAD.get_price_data(plain)
-        prices = price_data
+        try:
+            price_data = ITAD.get_price_data(plain)
+            prices = price_data
+        except Exception:
+            prices = None
+        
 
     # Load OC score
     search_res = OCHandler.search(full_name)
