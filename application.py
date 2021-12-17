@@ -150,8 +150,8 @@ def add_game(full_name: str):
         series = IGDB_res['collection']['name']
         urls[0]['series'] = IGDB_res['collection']['url']
         series_games = [x['name'] for x in IGDB_res['collection']['games'] if x['category'] in {0, 6, 8, 9, 10, 11}]
-        if len(series_games) >= 4:
-            series_games = series_games[:5]
+        if len(series_games) >= 3:
+            series_games = series_games[:4]
             series_games.append("...")
 
     # Related games
@@ -172,7 +172,7 @@ def add_game(full_name: str):
 
     # Create & add the new game object
     new_game = GameObj(full_name, genres, devs, publishers, series, series_games,
-                       related, prices[0], platforms, time_to_beat[0], urls, cover_art, OC_score[0])
+                       related, prices[0], platforms, time_to_beat[0], urls[0], cover_art, OC_score[0])
     games_list.append(new_game)
 
 
@@ -254,9 +254,9 @@ def cleargames_handler():
 
 # Main method
 if __name__ == "__main__":
-    test = input("Game name?\n")
-    add_game(test)
-    exit()
+    # test = input("Game name?\n")
+    # add_game(test)
+    # exit()
 
     # Host of localhost when testing
     app.run(host="localhost", port=4567, debug=True)
