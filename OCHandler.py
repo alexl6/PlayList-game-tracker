@@ -3,7 +3,7 @@ This program implements OpenCritic API
 https://app.swaggerhub.com/apis-docs/OpenCritic/OpenCritic-API/0.1.0
 """
 
-import time
+import re
 import urllib.request, urllib.parse, urllib.error
 import json
 
@@ -69,8 +69,14 @@ def get_review(id: int) -> dict:
     # Switch alternate quote_via function to work with the API
     return json.loads(_safe_get(url))
 
-def suggestions(game: str) -> List[str]:
-    res = search(game)
+
+def suggestions(keyword: str) -> List[str]:
+    """
+    Get suggestions from OpenCritic search. This function works, ran out of time to actually use it :(
+    :param keyword: Keyword entered by the user into the search box
+    :return: List of suggested game titles matching the user input
+    """
+    res = search(keyword)
     if len(res) == 0:
         return []
     return [x['name'] for x in res if x['dist'] <= 0.75]
@@ -85,6 +91,14 @@ def top_critic_score(game_data: dict) -> int:
     :return: Average top critic score
     """
     return int(game_data['topCriticScore'])
+
+def get_url(game_data: dict) -> str:
+    """
+    Gets the URL to the OpenCritic page for a given game
+    :param game_data: A game data object from OpenCritic
+    :return: URL to the game on OpenCritic
+    """
+    return "https://opencritic.com/game/%d/%s"%(game_data['id'], re.sub('\W+', '-', (game_data['name']).lower()))
 
 
 if __name__ == '__main__':

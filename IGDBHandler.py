@@ -159,9 +159,8 @@ class IGDBHandler:
             'games',
             """
             fields name, involved_companies.company.name, involved_companies.developer,
-             involved_companies.publisher, genres.name, platforms.name, 
-             collection.name, collection.games.name, collection.url,
-             similar_games.name, similar_games.genres.name, cover.url;
+             involved_companies.publisher, genres.name, platforms.name, url, 
+             collection.name, collection.games.name,collection.games.category, collection.url, cover.url;
             search "%s";
             where category = (0,3,6,7,8,9,10,11);
             """%name

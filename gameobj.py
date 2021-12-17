@@ -12,7 +12,7 @@ class GameObj:
                  prices: dict,
                  platforms: List[str],
                  time_to_beat: float,
-                 url: str,
+                 url: dict,
                  cover_art: str,
                  opencritic: int = -1) -> None:
         '''
@@ -40,6 +40,6 @@ class GameObj:
         self.prices: dict = prices
         self.platforms: List[str] = platforms
         self.time_to_beat: float = time_to_beat
-        self.url: str = url
+        self.url: dict = url
         self.cover_art: str = cover_art
         self.opencritic: int = opencritic

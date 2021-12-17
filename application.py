@@ -33,19 +33,20 @@ last_req: float = time.time()
 # Previously, the program performance is poor due to the amount of time it takes to
 # sequentially call and wait for the response from 4 APIs. Now the program
 # can run 3 of the 4 games
-def run_search_oc(full_name: str, return_target: List[int]):
+def run_search_oc(full_name: str, return_target: List[int], urls: List[dict]):
     """
     Helper function for multithreading: Calls the OCHandler to get the OpenCritic Review score
     :param full_name: Full name fo the game (supplied from IGDB data)
     :param return_target: List target to return the result after the thread finishes
+    :param urls: List of urls
     """
     search_res = OCHandler.search(full_name)
     if OCHandler.check_validity(search_res):
-        ID = OCHandler.top_id(search_res)
-        return_target[0] =int(OCHandler.top_critic_score(OCHandler.get_review(ID)))
+        review_obj = OCHandler.get_review(OCHandler.top_id(search_res))
+        return_target[0] =int(OCHandler.top_critic_score(review_obj))
+        urls[0]['OpenCritic'] = OCHandler.get_url(review_obj)
 
-
-def run_search_itad(full_name: str, return_target: List[dict]):
+def run_search_itad(full_name: str, return_target: List[dict], urls: List[dict]):
     """
     Helper function for multithreading: Calls the ITADHandler to get the price data from IsThereAnyDeal.com
     :param full_name: Full name fo the game (supplied from IGDB data)
@@ -53,6 +54,7 @@ def run_search_itad(full_name: str, return_target: List[dict]):
     """
     plain: str = ITAD.search(full_name)
     if plain is not None:
+        urls[0]['ITAD'] = "https://isthereanydeal.com/#/page:game/info?plain=" + plain
         try:
             price_data = ITAD.get_price_data(plain)
             return_target[0] = price_data
@@ -60,7 +62,7 @@ def run_search_itad(full_name: str, return_target: List[dict]):
             return_target[0] = None
 
 
-def run_search_hltb(full_name: str, return_target: List[int]):
+def run_search_hltb(full_name: str, return_target: List[int], urls: List[dict]):
     """
     Helper function for multithreading: Uses the unofficial HowLongToBeat.com wrapper to get the time it takes to beat the game
     :param full_name: Full name fo the game (supplied from IGDB data)
@@ -69,6 +71,7 @@ def run_search_hltb(full_name: str, return_target: List[int]):
     try:
         data = HtmlScraper().search(name=full_name)
         return_target[0] = data[0].gameplayMain
+        urls[0]['HLTB'] = "https://howlongtobeat.com/game?id=%s"%data[0].detailId
     except Exception:
         # Using a generic Exception here because the unofficial HowLongToBeat API doesn't seem to handle errors
         print("Unable to find this game on HowLongToBeat.com")
@@ -86,12 +89,13 @@ def add_game(full_name: str):
     OC_score = [-1]
     prices = [{}]
     time_to_beat = [-1]
+    urls = [{}]
 
-    itad_thread: Thread = Thread(target=run_search_itad, args=(full_name, prices))
+    itad_thread: Thread = Thread(target=run_search_itad, args=(full_name, prices, urls))
     itad_thread.start()
-    hltb_thread: Thread = Thread(target=run_search_hltb, args=(full_name, time_to_beat))
+    hltb_thread: Thread = Thread(target=run_search_hltb, args=(full_name, time_to_beat, urls))
     hltb_thread.start()
-    opencritic_thread: Thread = Thread(target=run_search_oc, args=(full_name, OC_score))
+    opencritic_thread: Thread = Thread(target=run_search_oc, args=(full_name, OC_score, urls))
     opencritic_thread.start()
 
     # Continue running current thread with IGDBHandler
@@ -100,7 +104,7 @@ def add_game(full_name: str):
     if len(IGDB_res) == 0:
         print("Invalid input detected")
         return
-    
+
     # Find the game with the most similar name in the result
     # IGDB search doesn't always find the best match
     most_similar = 0
@@ -112,9 +116,10 @@ def add_game(full_name: str):
             #print("%d - %s"%(similarity_score, IGDB_res[most_similar]['name']))
 
     IGDB_res = IGDB_res[most_similar]
-    
-    # Extract game name from the response before 
+
+    # Extract game name & URL of entry on IGDB from the response
     full_name = IGDB_res['name']
+    urls[0]["IGDB"] = IGDB_res['url']
 
     # Continue process IGDB data in the current thread
     # Get game genres
@@ -143,6 +148,7 @@ def add_game(full_name: str):
     series_games: List[str] = []
     if 'collection' in IGDB_res and len(IGDB_res['collection']['games']) > 0:
         series = IGDB_res['collection']['name']
+        urls[0]['series'] = IGDB_res['collection']['url']
         series_games = [x['name'] for x in IGDB_res['collection']['games'] if x['category'] in {0, 6, 8, 9, 10, 11}]
         if len(series_games) >= 4:
             series_games = series_games[:5]
@@ -166,7 +172,7 @@ def add_game(full_name: str):
 
     # Create & add the new game object
     new_game = GameObj(full_name, genres, devs, publishers, series, series_games,
-                       related, prices[0], platforms, time_to_beat[0], "url", cover_art, OC_score[0])
+                       related, prices[0], platforms, time_to_beat[0], urls, cover_art, OC_score[0])
     games_list.append(new_game)
 
 
@@ -248,9 +254,9 @@ def cleargames_handler():
 
 # Main method
 if __name__ == "__main__":
-    # test = input("Game name?\n")
-    # add_game(test)
-    # exit()
+    test = input("Game name?\n")
+    add_game(test)
+    exit()
 
     # Host of localhost when testing
     app.run(host="localhost", port=4567, debug=True)
