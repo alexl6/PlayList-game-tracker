@@ -14,7 +14,7 @@ class GameObj {
         public prices: any,
         public platforms: string [],
         public timeToBeat: number,
-        public url: string,
+        public urls: any,
         public coverArt: string,
         public opencritic: number,){}
 }

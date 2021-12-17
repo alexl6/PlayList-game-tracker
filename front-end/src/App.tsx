@@ -22,7 +22,7 @@ class GameObj {
         public prices: any,
         public platforms: string [],
         public timeToBeat: number,
-        public url: string,
+        public urls: any,
         public coverArt: string,
         public opencritic: number,){}
 }
@@ -66,9 +66,8 @@ class App extends Component<{}, AppState> {
         let allGames = await response.json();
 
         // Construct a new game object from the returned data
-        let newGameList: GameObj[] = []
+        let newGameList: GameObj[] = [];
         for (let game of allGames) {
-
             let newGame:GameObj = new GameObj(
                 game['name'],
                 game['genre'],
@@ -80,11 +79,11 @@ class App extends Component<{}, AppState> {
                 game['prices'],
                 game['platforms'],
                 game['time_to_beat'],
-                game['url'],
+                game['urls'],
                 game['cover_art'],
                 game['opencritic']
             );
-            newGameList = [...newGameList, newGame]
+            newGameList = [...newGameList, newGame];
         }
         this.setState({
             games: newGameList
@@ -96,7 +95,6 @@ class App extends Component<{}, AppState> {
      * @param keyword Search term from the user
      */
     getSuggestion = async (keyword: string) => {
-        console.log(keyword)
         try {
             let url =  this.state.server + "autocomplete?key=" + keyword;
             let responsePromise = fetch(url);
@@ -106,7 +104,6 @@ class App extends Component<{}, AppState> {
                 return;
             }
             let parsedObject = await response.json();
-            console.log(parsedObject)
             this.setState({suggestions: parsedObject});
         } catch (e) {
             alert("There was an error getting autocomplete suggestions from the server.\nIs the server running right now?");
@@ -123,16 +120,16 @@ class App extends Component<{}, AppState> {
         this.setState({
             suggestions: []
         })
-        console.log(name)
         try{
             let url = this.state.server + "addgame?name=" + name;
             let responsePromise = fetch(url);
             let response = await responsePromise;
             if(!response.ok){
-                alert("Error " + response.status)
+                alert("Error " + response.status);
             }
             let parsedObject = await response.json();
             // Construct a new game object from the returned data
+            console.log(parsedObject)
             let newGame:GameObj = new GameObj(
                 parsedObject['name'],
                 parsedObject['genre'],
@@ -144,15 +141,16 @@ class App extends Component<{}, AppState> {
                 parsedObject['prices'],
                 parsedObject['platforms'],
                 parsedObject['time_to_beat'],
-                parsedObject['url'],
+                parsedObject['urls'],
                 parsedObject['cover_art'],
                 parsedObject['opencritic']
-            )
+            );
             this.setState({
                 games: [...this.state.games, newGame]
-            })
+            });
         } catch (e) {
-            alert("There was an error adding game to the server. .\nIs the server running right now?")
+            alert("There was an error adding game to the server. .\nIs the server running right now?");
+            console.log(e);
         }
     }
 
@@ -168,8 +166,7 @@ class App extends Component<{}, AppState> {
                 alert("Error " + response.status);
                 return;
             }
-            let parsedObject = await response.json();
-            console.log(parsedObject)
+            await response.json();
             this.setState({
                 suggestions: [],
                 games: []
@@ -190,14 +187,18 @@ class App extends Component<{}, AppState> {
 
   render() {
         let gameLibrary = (
-            <div className={"library-placeholder"}> Your play list is empty. Add your first game here ⬆️</div>
+            <div>
+                <div className={"library-placeholder"}> Your play list is empty. Add your first game here⬆️</div>
+                <br/>
+                <div className={"library-placeholder"}> Enter the title of a game & select from the list of suggested games matching your search 🔍</div>
+            </div>
         );
         if (this.state.games.length !== 0){
             gameLibrary = (<GameCards games={this.state.games}/>);
         }
     return (
         <div className="App">
-            <header>Play List 🕹️</header>
+            <header>PlayList 🕹️</header>
                     <GameSelector onClearGames={this.clearAllGames} onClearSearch={this.clearSearch} suggestions={this.state.suggestions} onUpdateSearchTerm={this.getSuggestion} onUpdateGame={this.addGame}/>
                 <br/>
             <br/>

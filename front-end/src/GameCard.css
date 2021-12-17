@@ -80,6 +80,22 @@ h1.gameTitle{
     margin: 1.5% auto;
 }
 
+.right-link{
+    text-align: right;
+    font-size: small;
+    font-weight: 500;
+    margin-top: 0;
+    margin-bottom: 4.5%;
+}
+
+a:link{
+    color: royalblue;
+}
+
+a:hover{
+    color: rgb(139, 90, 238);
+}
+
 .right-side-desc{
     text-align: left;
     font-size: medium;
@@ -146,4 +162,10 @@ h1.gameTitle{
     width: 80%;
     text-align: left;
     padding-left: 10%;
+}
+
+.missing-playtime{
+    margin-top: 4%;
+    margin-bottom: 8%;
+    font-size: large;
 }

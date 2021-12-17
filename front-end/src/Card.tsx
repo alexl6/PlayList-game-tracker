@@ -13,7 +13,7 @@ class GameObj {
         public prices: any,
         public platforms: string [],
         public timeToBeat: number,
-        public url: string,
+        public urls: any,
         public coverArt: string,
         public opencritic: number,){}
 }
@@ -32,7 +32,7 @@ class Card extends Component<CardProps, {}>{
         // Display the game series if available
         let series;
         if (this.props.game.series !== ""){
-            series = (<div className={"left-desc"}> <b>Game series:</b>&#9; {this.props.game.series} </div>);
+            series = (<div className={"left-desc"}> <b>Game series:</b>&#9; <a href={this.props.game.urls['series']}>{this.props.game.series}</a></div>);
         }
 
         // The data for some fields on the right may not be available
@@ -40,7 +40,7 @@ class Card extends Component<CardProps, {}>{
         let rightSideOptional = [];
 
         // Show price data
-        if(this.props.game.prices !== null){
+        if(this.props.game.prices !== null && this.props.game.prices.current_low != null){
             let relative_price = 100-this.props.game.prices.percent_off;
             const styles = {
                 width: relative_price +'%',
@@ -58,18 +58,25 @@ class Card extends Component<CardProps, {}>{
                         <div className={"price-bar-label"} style = {{textAlign: "left"}}> Historical low: ${this.props.game.prices.lowest} </div>
                         <div className={"price-bar-label"} style = {{textAlign: "right"}}> Regular: ${this.props.game.prices.normal} </div>
                     </div>
-                    <br/>
+                    <div className={"right-link"}> <a href={this.props.game.urls['ITAD']}>IsThereAnyDeal ↗</a></div>
                 </div>
             );
         }
         // Display the playtime data
-        if (this.props.game.timeToBeat !== -1){
+        if (this.props.game.timeToBeat === 0){
+            rightSideOptional.push(
+              <div>
+                  <div className={"right-side-desc"}> <b>How long it takes to beat the game (Avg):</b></div>
+                  <div className={"missing-playtime"}><a href={this.props.game.urls['HLTB']}> Available on HowLongToBeat ↗</a></div>
+                </div>);
+        } else if (this.props.game.timeToBeat !== -1){
             rightSideOptional.push(
               <div>
                   <div className={"right-side-desc"}> <b>How long it takes to beat the game (Avg):</b></div>
                   <div className={"large-num"}> {this.props.game.timeToBeat} hrs </div>
+                  <div className={"right-link"}> <a href={this.props.game.urls['HLTB']}>HowLongToBeat ↗</a></div>
                 </div>);
-        }
+        } 
         // Color code the bar representing OpenCritic score
         if (this.props.game.opencritic !== -1){
             const styles = {
@@ -82,6 +89,7 @@ class Card extends Component<CardProps, {}>{
                     <div className="bar-container">
                         <div className="bar" style={styles}> <b>{this.props.game.opencritic} </b></div>
                     </div>
+                    <div className='right-link'><a href={this.props.game.urls['OpenCritic']}>OpenCritic ↗</a></div>
                 </div>);
         }
 
@@ -119,6 +127,8 @@ class Card extends Component<CardProps, {}>{
                     <div className={"left-desc"}> <b>Publisher: </b>&#9; {publishers} </div>
                     <div className={"left-desc"}> <b>Genres: </b>&#9; {genres} </div>
                     {series}
+                    <br/>
+                    <div className={"right-link"}><a href={this.props.game.urls['IGDB']}>More info on IGDB ↗</a></div>
                 </div>
                 <div className={"card-right"}>
                     {rightSideOptional}
