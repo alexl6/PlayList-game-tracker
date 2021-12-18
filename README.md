@@ -7,8 +7,9 @@ http://playlist2.azurewebsites.net
 (Website may take up to 2 minutes to load from cold start)
 
 ## File structures
-All React Typescript code are contained in `front-end` folder.
-Back-end Python code are in the root directory (`application.py` is the main file) 
+All React Typescript files are contained in `front-end` folder.
+
+Back-end Python code files are in the root directory (`application.py` is the main file) 
 
 ## APIs & Data sources
 
