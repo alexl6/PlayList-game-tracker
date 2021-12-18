@@ -29,7 +29,6 @@ class GameObj:
         :param url: URL to the game on IsThereAnyDeal
         :param cover_art: URL to the cover art
         '''
-        # TODO: Update price to be its own object
         self.name: str = name
         self.genre: List[str] = genre
         self.developer: List[str] = developer

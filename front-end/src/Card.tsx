@@ -41,7 +41,8 @@ class Card extends Component<CardProps, {}>{
 
         // Show price data
         if(this.props.game.prices !== null && this.props.game.prices.current_low != null){
-            let relative_price = 100-this.props.game.prices.percent_off;
+            let relative_price = (this.props.game.prices.current_low -this.props.game.prices.lowest)/ (this.props.game.prices.normal - this.props.game.prices.lowest) * 100;
+            console.log(relative_price)
             const styles = {
                 width: relative_price +'%',
                 backgroundColor: "#F9D291"
