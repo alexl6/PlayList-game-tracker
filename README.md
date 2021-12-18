@@ -2,7 +2,9 @@
 
 Final project for HCDE 310 - Autumn 2021 @UW
 
-## Under construction
+Live demo available at:
+http://playlist2.azurewebsites.net
+(Website may take up to 2 minutes to load from cold start)
 
 ## APIs & Data sources
 
