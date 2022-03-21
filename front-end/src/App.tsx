@@ -33,8 +33,8 @@ class App extends Component<{}, AppState> {
         this.state = {
             games: [],
             suggestions: [],
-            server: "https://alexl6-playlist.azurewebsites.net/",
-            // server: "http://localhost:4567/",
+            // server: "https://alexl6-playlist.azurewebsites.net/",
+            server: "http://localhost:4567/",
         };
 
         this.loadAllGames = this.loadAllGames.bind(this);

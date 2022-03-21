@@ -53,11 +53,11 @@ class IGDBHandler:
         self.client_id = client_id
         self.secret = secret
 
-        # TODO: Remove debug code - Temporary cache for token
-        from keys import IGDB_token
-        self.token = IGDB_token
-        self.exp_time = time.time() + 2134700
-        return
+        # # TODO: Remove debug code - Temporary cache for token
+        # from keys import IGDB_token
+        # self.token = IGDB_token
+        # self.exp_time = time.time() + 2134700
+        # return
 
         # Create token request as a JSON file
         data = {'client_id': client_id, 'client_secret': secret, 'grant_type': "client_credentials"}
