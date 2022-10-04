@@ -1,4 +1,4 @@
-# HCDE 310 Final Project - Au21
+# PlayList - A game tracker
 Final project for HCDE 310 - Autumn 2021 @UW
 
 # Description
@@ -8,17 +8,20 @@ Key features:
 - Compiles useful information such as game genre, playtime, pricing, and review scores with different APIs across multiple sources
 - Autocomplete/suggest games based on user input
 - Simple & intuitive UI with responsive design
+- Written in Python & React/TypeScript
+- Clear documentation for both backend & frontend code
 
 # Context
 The project was built near the end of Autumn quarter 2021 in approximately 2.5~3 weeks.
 
 While I strive to maintain high code quality, I am aware that some programming decisions around performance, modularity, and code clarity could be improved & optimized. This is due to time constraints and the nature of the project being an interactive prototype.
 
-# Live demo
-~~http://playlist2.azurewebsites.net
+# Demo
+Live demo: ~~http://playlist2.azurewebsites.net
 (Website may take up to 2 minutes to load from cold start)~~
+(temporarily unavailable due to expired API keys)
 
-(Live demo is temporarily unavailable due to expired API keys)
+Video Demo: [YouTube](https://youtu.be/DcWTyTp-wjs)
 
 # File structures
 All React TypeScript files are contained in `front-end` folder.
